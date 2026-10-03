@@ -7,21 +7,58 @@ import { SITE } from '../config';
 interface Props {
   title?: string;
   description?: string;
+  // Versión Markdown de la página para agentes; false si no tiene (p. ej. el 404)
+  markdown?: string | false;
+  noindex?: boolean;
 }
-const { title = `${SITE.name} · ${SITE.tagline}`, description = SITE.description } = Astro.props;
+const {
+  title = `${SITE.name} · ${SITE.tagline}`,
+  description = SITE.description,
+  markdown = `${Astro.url.pathname.replace(/\/?$/, '/')}index.md`,
+  noindex = false,
+} = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
 const ogImage = new URL('/og-image.jpg', Astro.site ?? SITE.url);
+const orgId = `${SITE.url}/#organization`;
 
-// Datos estructurados: vinculan el sitio con su logo y su perfil de Instagram
-const organization = {
+// Datos estructurados: organización (contacto, dirección, logo, Instagram) y sitio web
+const structuredData = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
-  name: SITE.name,
-  url: SITE.url,
-  logo: new URL('/logo.png', SITE.url).href,
-  email: SITE.email,
-  description: SITE.description,
-  sameAs: [SITE.instagram],
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': orgId,
+      name: SITE.name,
+      url: SITE.url,
+      logo: new URL('/logo.png', SITE.url).href,
+      email: SITE.email,
+      description: SITE.description,
+      slogan: SITE.tagline,
+      areaServed: { '@type': 'Place', name: SITE.areaServed },
+      knowsLanguage: SITE.language,
+      address: { '@type': 'PostalAddress', addressCountry: SITE.addressCountry },
+      contactPoint: [
+        {
+          '@type': 'ContactPoint',
+          contactType: 'customer service',
+          email: SITE.email,
+          url: new URL('/contact/', SITE.url).href,
+          availableLanguage: [SITE.language],
+          areaServed: SITE.areaServed,
+        },
+      ],
+      sameAs: [SITE.instagram],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE.url}/#website`,
+      name: SITE.name,
+      alternateName: 'Gero Amigos',
+      url: SITE.url,
+      inLanguage: SITE.language,
+      publisher: { '@id': orgId },
+    },
+  ],
 };
 ---
 <!doctype html>
@@ -32,6 +69,8 @@ const organization = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#FBF6EE" />
@@ -44,7 +83,7 @@ const organization = {
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
     <a class="skip" href="#contenido">Saltar al contenido</a>

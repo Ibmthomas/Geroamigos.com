@@ -2,23 +2,21 @@
 import { Image } from 'astro:assets';
 import fotoBanca from '../assets/img/conversacion-banca.jpg';
 import { mailto } from '../config';
+import { RECURSOS, RECURSOS_INTRO } from '../data/home';
 ---
 <section id="recursos" class="recursos section" aria-labelledby="recursos-title">
   <div class="wrap">
     <div class="recursos__head">
-      <p class="eyebrow">Recursos</p>
-      <h2 id="recursos-title" class="h2">Charlas y conversaciones</h2>
-      <p class="lead">
-        Llevamos la gerontología a auditorios, equipos de trabajo y redes sociales. Estos son
-        algunos de los temas que nos mueven.
-      </p>
+      <p class="eyebrow">{RECURSOS_INTRO.eyebrow}</p>
+      <h2 id="recursos-title" class="h2">{RECURSOS_INTRO.title}</h2>
+      <p class="lead">{RECURSOS_INTRO.lead}</p>
     </div>
 
     <ul class="recursos__grid">
       <li class="card card--maiz">
         <svg class="card__circle" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" /></svg>
-        <p class="card__tag">Charla · LATAM</p>
-        <h3 class="card__title">Cuidar sin discriminar</h3>
+        <p class="card__tag">{RECURSOS.charla.tag}</p>
+        <h3 class="card__title">{RECURSOS.charla.title}</h3>
       </li>
 
       <li class="card card--foto">
@@ -28,13 +26,13 @@ import { mailto } from '../config';
           widths={[400, 600]}
           sizes="(max-width: 560px) 100vw, 300px"
         />
-        <h3 class="card__title">Conversar también es cuidar</h3>
+        <h3 class="card__title">{RECURSOS.conversar.title}</h3>
       </li>
 
       <li class="card card--cacao">
         <svg class="card__circle" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" /></svg>
-        <p class="card__tag">Tendencias</p>
-        <h3 class="card__title">Silver economy en Latinoamérica</h3>
+        <p class="card__tag">{RECURSOS.tendencias.tag}</p>
+        <h3 class="card__title">{RECURSOS.tendencias.title}</h3>
       </li>
 
       <li class="card card--jade">
@@ -44,10 +42,10 @@ import { mailto } from '../config';
           <circle cx="190" cy="130" r="90" fill="#1A2814" />
           <circle cx="190" cy="130" r="90" fill="#121A0C" clip-path="url(#rec-a)" />
         </svg>
-        <p class="card__tag">Asesoría</p>
-        <h3 class="card__title">Asesoría para residencias</h3>
-        <a class="btn btn--light card__btn" href={mailto('Asesoría para residencias · GeroAmigos')}>
-          Agenda una reunión
+        <p class="card__tag">{RECURSOS.residencias.tag}</p>
+        <h3 class="card__title">{RECURSOS.residencias.title}</h3>
+        <a class="btn btn--light card__btn" href={mailto(`${RECURSOS.residencias.title} · GeroAmigos`)}>
+          {RECURSOS.residencias.cta}
         </a>
       </li>
     </ul>

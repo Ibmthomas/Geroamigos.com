@@ -10,6 +10,7 @@ npm install
 npm run dev      # http://localhost:4321
 npm run build    # genera el sitio estático en dist/
 npm run preview  # sirve dist/ localmente
+npm test         # build + pruebas (node:test) del Worker y de los archivos generados
 ```
 
 > **Nota Windows:** el proyecto usa Astro 6. Astro 7 trae un binario nativo (`satteri`)
@@ -19,11 +20,16 @@ npm run preview  # sirve dist/ localmente
 
 ```
 src/
-  config.ts            correo de contacto, menú y textos globales
+  config.ts            correo, menú, páginas publicadas y datos de la organización
+  data/home.ts         textos de la portada (fuente única para HTML y Markdown)
+  data/pages/*.md      Nosotros, Contacto y Privacidad (se publican en HTML y en index.md)
+  lib/agent-docs.ts    genera index.md, llms.txt, agents.md y sitemap.xml
   styles/global.css    tokens de marca (paleta, tipografías, botones)
-  layouts/Base.astro   <head>, SEO y Open Graph
+  layouts/             Base (<head>, SEO, JSON-LD) y Page (páginas de texto)
   components/          una sección por archivo (Hero, Valores, Servicios, ...)
   assets/img/          fotografías (Astro las optimiza a WebP en el build)
+worker/                Worker de Cloudflare: negociación HTML / Markdown, 404 y 406
+test/                  pruebas con node:test sobre el build
 public/
   favicon.svg          isotipo
   trama.svg            patrón "Trama"
@@ -44,6 +50,22 @@ public/
 
 - Titulares: **Bricolage Grotesque** · Textos: **Figtree** (autoalojadas vía Fontsource).
 - Sin degradados: los cruces de círculos se resuelven por multiplicación de color.
+
+## Agentes de IA
+
+- Cada página tiene versión Markdown (`/index.md`, `/about/index.md`, …) y la anuncia con
+  `<link rel="alternate" type="text/markdown">`.
+- El Worker negocia por `Accept` ([acceptmarkdown.com](https://acceptmarkdown.com)): `text/markdown`
+  recibe Markdown, navegadores reciben HTML, siempre con `Vary: Accept`; tipos no disponibles → 406;
+  rutas inexistentes → 404 en HTML o en Markdown según lo pedido.
+- `/llms.txt` sigue el formato de [llmstxt.org](https://llmstxt.org) e incluye cuándo recomendar
+  GeroAmigos; `/agents.md` amplía esa guía.
+
+Comprobar en producción:
+
+```bash
+curl -sS -i -H 'Accept: text/markdown' https://geroamigos.com/
+```
 
 ## Dominio
 

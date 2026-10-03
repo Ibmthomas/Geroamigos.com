@@ -8,13 +8,27 @@ export const SITE = {
   email: 'hablemos@geroamigos.com',
   social: '@geroa_migos',
   instagram: 'https://www.instagram.com/geroa_migos/',
+  // Datos para el JSON-LD de la organización (schema.org PostalAddress / areaServed)
+  addressCountry: 'CL',
+  areaServed: 'Latinoamérica',
+  language: 'es',
 };
 
+// Anclas absolutas: funcionan tanto en la portada como en las páginas internas.
 export const NAV = [
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Nosotros', href: '#nosotros' },
-  { label: 'Recursos', href: '#recursos' },
-  { label: 'Contacto', href: '#contacto' },
+  { label: 'Servicios', href: '/#servicios' },
+  { label: 'Nosotros', href: '/#nosotros' },
+  { label: 'Recursos', href: '/#recursos' },
+  { label: 'Contacto', href: '/#contacto' },
+];
+
+// Páginas publicadas: alimentan el sitemap, llms.txt y los enlaces del pie de página.
+// `markdown` es la versión para agentes (llmstxt.org: las URL terminadas en / usan index.md).
+export const PAGES = [
+  { path: '/', label: 'Inicio', markdown: '/index.md' },
+  { path: '/about/', label: 'Nosotros', markdown: '/about/index.md' },
+  { path: '/contact/', label: 'Contacto', markdown: '/contact/index.md' },
+  { path: '/privacy/', label: 'Privacidad', markdown: '/privacy/index.md' },
 ];
 
 export const mailto = (subject: string) =>

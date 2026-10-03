@@ -1,0 +1,16 @@
+---
+import type { MarkdownInstance } from 'astro';
+import Page from '../../layouts/Page.astro';
+import { contentPagePaths, type PageFrontmatter } from '../../lib/pages';
+
+export const getStaticPaths = contentPagePaths;
+
+interface Props {
+  entry: MarkdownInstance<PageFrontmatter>;
+}
+const { entry } = Astro.props;
+const { Content, frontmatter } = entry;
+---
+<Page {...frontmatter}>
+  <Content />
+</Page>
