@@ -11,6 +11,18 @@ interface Props {
 const { title = `${SITE.name} · ${SITE.tagline}`, description = SITE.description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url);
 const ogImage = new URL('/og-image.jpg', Astro.site ?? SITE.url);
+
+// Datos estructurados: vinculan el sitio con su logo y su perfil de Instagram
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE.name,
+  url: SITE.url,
+  logo: new URL('/logo.png', SITE.url).href,
+  email: SITE.email,
+  description: SITE.description,
+  sameAs: [SITE.instagram],
+};
 ---
 <!doctype html>
 <html lang="es">
@@ -21,6 +33,7 @@ const ogImage = new URL('/og-image.jpg', Astro.site ?? SITE.url);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#FBF6EE" />
 
     <meta property="og:type" content="website" />
@@ -31,6 +44,7 @@ const ogImage = new URL('/og-image.jpg', Astro.site ?? SITE.url);
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(organization)} />
   </head>
   <body>
     <a class="skip" href="#contenido">Saltar al contenido</a>
