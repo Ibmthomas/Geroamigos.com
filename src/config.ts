@@ -5,7 +5,7 @@ export const SITE = {
   description:
     'GeroAmigos es una red de profesionales de la gerontología en Latinoamérica. Charlas, consultorías y asesorías para instituciones, residencias, profesionales y familias.',
   url: 'https://geroamigos.com',
-  email: 'thomas@macainn.cl',
+  email: 'hablemos@geroamigos.com',
   social: '@geroamigos',
 };
 
