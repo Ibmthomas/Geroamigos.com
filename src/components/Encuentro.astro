@@ -1,5 +1,6 @@
 ---
 // Banda "Encuentro": portada en Cacao con círculos que se cruzan.
+import { ENCUENTRO } from '../data/home';
 ---
 <section class="encuentro" aria-labelledby="encuentro-title">
   <svg class="encuentro__circles" viewBox="0 0 600 400" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
@@ -13,10 +14,10 @@
   </svg>
 
   <div class="wrap encuentro__inner">
-    <p class="eyebrow">Nuestra mirada</p>
-    <h2 id="encuentro-title" class="encuentro__title">Envejecer entre amigos</h2>
+    <p class="eyebrow">{ENCUENTRO.eyebrow}</p>
+    <h2 id="encuentro-title" class="encuentro__title">{ENCUENTRO.title}</h2>
     <blockquote class="encuentro__quote">
-      <p>“Envejecer también se aprende. Y se aprende mejor entre amigos.”</p>
+      <p>“{ENCUENTRO.quote}”</p>
     </blockquote>
   </div>
 </section>

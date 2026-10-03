@@ -2,25 +2,7 @@
 import { Image } from 'astro:assets';
 import foto from '../assets/img/cuidado-abrazo.jpg';
 
-// "Hilos": barras redondeadas de color para listar con quién trabajamos.
-const hilos = [
-  [
-    { label: 'Instituciones públicas y privadas', tone: 'terracota', grow: 3 },
-    { label: 'Gobiernos', tone: 'maiz', grow: 1 },
-  ],
-  [
-    { label: 'ONG', tone: 'jade', grow: 1 },
-    { label: 'Residencias de personas mayores', tone: 'terracota', grow: 3 },
-  ],
-  [
-    { label: 'Profesionales de la salud', tone: 'maiz', grow: 2 },
-    { label: 'Gerontólogos', tone: 'jade', grow: 1.5 },
-  ],
-  [
-    { label: 'Psicogerontólogos', tone: 'cacao', grow: 1.5 },
-    { label: 'Familias', tone: 'jade', grow: 1 },
-  ],
-];
+import { NOSOTROS, PUBLICO as hilos } from '../data/home';
 ---
 <section id="nosotros" class="nosotros section" aria-labelledby="nosotros-title">
   <div class="wrap nosotros__grid">
@@ -35,20 +17,11 @@ const hilos = [
     </div>
 
     <div class="nosotros__body">
-      <p class="eyebrow">Nosotros</p>
-      <h2 id="nosotros-title" class="h2">Un grupo de amigos de la gerontología latinoamericana</h2>
-      <p class="nosotros__text">
-        GeroAmigos reúne a profesionales de la gerontología de distintos países de Latinoamérica.
-        Nos une una idea simple: la longevidad se vive mejor cuando es activa, sin
-        discriminaciones y con identidad propia.
-      </p>
-      <p class="nosotros__text">
-        Queremos mostrar lo que se está haciendo en la región en cuidado, vida social,
-        entretenimiento y tecnología para las personas mayores, y llevar ese conocimiento a
-        quienes cuidan y deciden todos los días.
-      </p>
+      <p class="eyebrow">{NOSOTROS.eyebrow}</p>
+      <h2 id="nosotros-title" class="h2">{NOSOTROS.title}</h2>
+      {NOSOTROS.paragraphs.map((texto) => <p class="nosotros__text">{texto}</p>)}
 
-      <h3 class="nosotros__sub">Con quién trabajamos</h3>
+      <h3 class="nosotros__sub">{NOSOTROS.publicoTitle}</h3>
       <ul class="hilos">
         {hilos.map((fila) => (
           <li class="hilos__fila">

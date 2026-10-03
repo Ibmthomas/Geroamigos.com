@@ -1,0 +1,119 @@
+---
+// Páginas de texto (Nosotros, Contacto, Privacidad) con la estética del sitio.
+import Base from './Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Trama from '../components/Trama.astro';
+import { SITE } from '../config';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  lead: string;
+}
+const { title, description, eyebrow, lead } = Astro.props;
+---
+<Base title={`${title} · ${SITE.name}`} description={description}>
+  <Header />
+  <main id="contenido">
+    <section class="page-hero" aria-labelledby="page-title">
+      <span class="page-hero__deco" aria-hidden="true"></span>
+      <div class="wrap page-hero__inner">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1 id="page-title" class="page-hero__title">{title}</h1>
+        <p class="lead page-hero__lead">{lead}</p>
+      </div>
+    </section>
+    <Trama height="clamp(28px, 3.5vw, 44px)" />
+    <section class="section page-body">
+      <div class="wrap prose">
+        <slot />
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3rem, 7vw, 5.5rem) clamp(2.5rem, 5vw, 4rem);
+  }
+  .page-hero__deco {
+    position: absolute;
+    width: clamp(200px, 28vw, 380px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--jade-suave);
+    right: calc(clamp(200px, 28vw, 380px) * -0.35);
+    top: -2rem;
+  }
+  .page-hero__inner {
+    position: relative;
+  }
+  .page-hero__title {
+    font-size: clamp(2.6rem, 6.4vw, 5rem);
+    letter-spacing: -0.045em;
+  }
+  .page-hero__lead {
+    margin-top: 1.25rem;
+  }
+
+  .page-body {
+    padding-top: clamp(3rem, 6vw, 4.5rem);
+  }
+  .prose {
+    max-width: 46rem;
+    margin-inline: auto;
+  }
+  .prose :global(h2) {
+    margin-top: 2.75rem;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 1rem 0 0;
+    color: var(--ink-soft);
+  }
+  .prose :global(strong) {
+    color: var(--ink);
+  }
+  .prose :global(ul) {
+    padding-left: 0;
+    list-style: none;
+  }
+  .prose :global(li) {
+    position: relative;
+    padding-left: 1.6rem;
+    margin-top: 0.6rem;
+  }
+  .prose :global(li)::before {
+    content: '';
+    position: absolute;
+    left: 0.15rem;
+    top: 0.6em;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    background: var(--terracota);
+  }
+  .prose :global(li:nth-child(3n + 2))::before {
+    background: var(--maiz);
+  }
+  .prose :global(li:nth-child(3n))::before {
+    background: var(--jade);
+  }
+  .prose :global(a) {
+    color: var(--jade);
+    font-weight: 600;
+    text-underline-offset: 4px;
+  }
+</style>

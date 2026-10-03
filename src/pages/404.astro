@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Isotipo from '../components/Isotipo.astro';
+import { SITE } from '../config';
+---
+<Base title={`Página no encontrada · ${SITE.name}`} markdown={false} noindex>
+  <Header />
+  <main id="contenido" class="notfound section">
+    <div class="wrap notfound__grid">
+      <div>
+        <p class="eyebrow">Error 404</p>
+        <h1 class="notfound__title">No encontramos esta página</h1>
+        <p class="lead notfound__lead">
+          Puede que el enlace esté mal escrito o que la página ya no exista. Te dejamos algunos
+          caminos para seguir.
+        </p>
+        <div class="notfound__actions">
+          <a class="btn btn--primary" href="/">Ir al inicio</a>
+          <a class="btn btn--ghost" href="/contact/">Contacto</a>
+        </div>
+      </div>
+      <div class="notfound__art" aria-hidden="true">
+        <Isotipo size="100%" />
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<style>
+  .notfound__grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .notfound__title {
+    font-size: clamp(2.6rem, 6vw, 4.5rem);
+    letter-spacing: -0.045em;
+  }
+  .notfound__lead {
+    margin-top: 1.25rem;
+  }
+  .notfound__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    margin-top: 2rem;
+  }
+  .notfound__art {
+    justify-self: center;
+    width: min(100%, 20rem);
+  }
+  @media (max-width: 760px) {
+    .notfound__grid { grid-template-columns: 1fr; }
+    .notfound__art { width: 9rem; justify-self: start; order: -1; }
+  }
+</style>

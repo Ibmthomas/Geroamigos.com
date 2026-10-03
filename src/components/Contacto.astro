@@ -2,23 +2,21 @@
 import Isotipo from './Isotipo.astro';
 import Icon from './Icon.astro';
 import { SITE, mailto } from '../config';
+import { CONTACTO } from '../data/home';
 ---
 <section id="contacto" class="contacto section" aria-labelledby="contacto-title">
   <div class="wrap contacto__grid">
     <div>
-      <p class="eyebrow">Contacto</p>
-      <h2 id="contacto-title" class="h2">Agenda una asesoría</h2>
-      <p class="lead contacto__lead">
-        Cuéntanos qué necesita tu institución, residencia o equipo, y coordinamos una
-        conversación.
-      </p>
+      <p class="eyebrow">{CONTACTO.eyebrow}</p>
+      <h2 id="contacto-title" class="h2">{CONTACTO.title}</h2>
+      <p class="lead contacto__lead">{CONTACTO.lead}</p>
       <div class="contacto__actions">
         <a class="btn btn--primary" href={mailto('Quiero agendar una asesoría · GeroAmigos')}>
-          <Icon name="correo" size={22} /> Escríbenos
+          <Icon name="correo" size={22} /> {CONTACTO.cta}
         </a>
         <a class="contacto__mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
       </div>
-      <p class="contacto__para">Instituciones · Residencias · Profesionales · Familias</p>
+      <p class="contacto__para">{CONTACTO.para.join(' · ')}</p>
     </div>
 
     <div class="contacto__art" aria-hidden="true">

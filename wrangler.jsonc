@@ -1,10 +1,16 @@
-// Despliegue en Cloudflare Workers (sitio estático)
+// Despliegue en Cloudflare Workers.
+// El Worker (worker/index.js) recibe todas las peticiones, negocia HTML / Markdown según
+// el encabezado Accept y sirve los archivos estáticos de dist/ mediante el binding ASSETS.
 // El dominio geroamigos.com se conecta desde el panel: Worker → Settings → Domains & Routes.
 {
   "name": "geroamigos",
+  "main": "worker/index.js",
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": true
   }
 }

@@ -1,19 +1,11 @@
 ---
-const valores = [
-  { n: '01', titulo: 'Visión', texto: 'Mirar el envejecimiento a escala regional y global.', tone: 'terracota' },
-  { n: '02', titulo: 'Innovación', texto: 'Tecnología y nuevas formas de cuidar.', tone: 'maiz' },
-  { n: '03', titulo: 'Educación', texto: 'Compartir saber con instituciones, profesionales y familias.', tone: 'jade' },
-  { n: '04', titulo: 'Inclusión', texto: 'Una longevidad activa, sin discriminaciones.', tone: 'cacao' },
-];
+import { VALORES as valores, VALORES_INTRO } from '../data/home';
 ---
 <section class="valores section" aria-labelledby="valores-title">
   <div class="wrap">
     <div class="valores__head">
-      <h2 id="valores-title" class="h2">Muchas manos, un mismo tejido.</h2>
-      <p class="lead">
-        Tres círculos que se cruzan: profesionales, instituciones y personas mayores. Donde se
-        tocan nace un color nuevo: la inclusión hecha forma.
-      </p>
+      <h2 id="valores-title" class="h2">{VALORES_INTRO.title}</h2>
+      <p class="lead">{VALORES_INTRO.lead}</p>
     </div>
 
     <ul class="valores__grid">

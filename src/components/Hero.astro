@@ -2,14 +2,17 @@
 import { Image } from 'astro:assets';
 import foto from '../assets/img/persona-mayor-bosque.jpg';
 import Icon from './Icon.astro';
+import { HERO } from '../data/home';
 
-const pills = [
-  { label: 'Longevidad', tone: 'terracota', pos: 'l1' },
-  { label: 'Persona mayor', tone: 'papel', pos: 'l2' },
-  { label: 'Gerontología', tone: 'jade', pos: 'l3' },
-  { label: 'Silver economy', tone: 'maiz', pos: 'r1' },
-  { label: 'Tecnología', tone: 'cacao', pos: 'r2' },
+// Tono y posición de cada etiqueta, en el mismo orden que HERO.temas
+const estilos = [
+  { tone: 'terracota', pos: 'l1' },
+  { tone: 'papel', pos: 'l2' },
+  { tone: 'jade', pos: 'l3' },
+  { tone: 'maiz', pos: 'r1' },
+  { tone: 'cacao', pos: 'r2' },
 ];
+const pills = HERO.temas.map((label, i) => ({ label, ...estilos[i % estilos.length] }));
 ---
 <section class="hero" aria-labelledby="hero-title">
   <span class="hero__deco hero__deco--jade" aria-hidden="true"></span>
@@ -17,12 +20,9 @@ const pills = [
 
   <div class="wrap hero__inner">
     <h1 id="hero-title" class="hero__title">
-      Longevidad activa con <span>voz latina</span>
+      {HERO.titleStart} <span>{HERO.titleAccent}</span>
     </h1>
-    <p class="hero__lead">
-      Somos una red de amigos de la gerontología latinoamericana. Educamos y asesoramos a
-      instituciones, profesionales y familias para una longevidad activa y sin discriminaciones.
-    </p>
+    <p class="hero__lead">{HERO.lead}</p>
 
     <div class="hero__stage">
       <div class="hero__photo">
@@ -49,9 +49,9 @@ const pills = [
 
     <div class="hero__actions">
       <a class="btn btn--primary" href="#servicios">
-        Conoce nuestros servicios <Icon name="flecha" size={20} />
+        {HERO.ctaPrimary} <Icon name="flecha" size={20} />
       </a>
-      <a class="btn btn--ghost" href="#recursos">Ver charlas</a>
+      <a class="btn btn--ghost" href="#recursos">{HERO.ctaSecondary}</a>
     </div>
   </div>
 </section>
