@@ -1,0 +1,138 @@
+---
+import Icon, { type IconName } from './Icon.astro';
+
+const servicios: { icon: IconName; titulo: string; texto: string; tone: string }[] = [
+  {
+    icon: 'charlas',
+    titulo: 'Charlas',
+    texto: 'Charlas y talleres sobre longevidad, persona mayor y gerontología social para equipos y comunidades.',
+    tone: 'terracota',
+  },
+  {
+    icon: 'consultorias',
+    titulo: 'Consultorías',
+    texto: 'Asistencia gerontológica a instituciones públicas y privadas para diseñar mejores programas y servicios.',
+    tone: 'maiz',
+  },
+  {
+    icon: 'residencias',
+    titulo: 'Residencias',
+    texto: 'Asesoría a residencias de personas mayores en modelos de cuidado, calidad y buen trato.',
+    tone: 'jade',
+  },
+  {
+    icon: 'familias',
+    titulo: 'Familias',
+    texto: 'Orientación a familias que acompañan el envejecimiento de un ser querido.',
+    tone: 'cacao',
+  },
+  {
+    icon: 'tecnologia',
+    titulo: 'Tecnología',
+    texto: 'Tecnología para el cuidado: herramientas que suman autonomía, conexión y bienestar.',
+    tone: 'maiz',
+  },
+  {
+    icon: 'politicas',
+    titulo: 'Políticas públicas',
+    texto: 'Apoyo a gobiernos y ONG en el diseño de políticas sobre envejecimiento.',
+    tone: 'jade',
+  },
+  {
+    icon: 'tendencias',
+    titulo: 'Tendencias',
+    texto: 'Lectura de las tendencias del envejecimiento y la silver economy en la región.',
+    tone: 'cacao',
+  },
+  {
+    icon: 'redes',
+    titulo: 'Redes sociales',
+    texto: 'Contenidos y comunidad para conversar de longevidad con voz latina.',
+    tone: 'terracota',
+  },
+];
+---
+<section id="servicios" class="servicios section" aria-labelledby="servicios-title">
+  <div class="wrap">
+    <div class="servicios__head">
+      <p class="eyebrow">Servicios</p>
+      <h2 id="servicios-title" class="h2">Saber gerontológico para quienes cuidan</h2>
+      <p class="lead">
+        Charlas, consultorías y asesorías para instituciones, residencias, profesionales y
+        familias de toda Latinoamérica.
+      </p>
+    </div>
+
+    <ul class="servicios__grid">
+      {servicios.map((s) => (
+        <li class="servicio">
+          <span class:list={['servicio__icon', `servicio__icon--${s.tone}`]}>
+            <Icon name={s.icon} size={34} />
+          </span>
+          <h3 class="servicio__title">{s.titulo}</h3>
+          <p class="servicio__text">{s.texto}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .servicios__head {
+    max-width: 44rem;
+  }
+  .servicios__head .lead {
+    margin-top: 1.25rem;
+  }
+  .servicios__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 3rem 2rem;
+    margin: clamp(3rem, 6vw, 4.5rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .servicio__icon {
+    display: grid;
+    place-items: center;
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    transition: transform 0.25s;
+  }
+  .servicio:hover .servicio__icon {
+    transform: scale(1.06) rotate(-4deg);
+  }
+  .servicio__icon--terracota { background: var(--terracota); color: var(--papel); }
+  .servicio__icon--maiz { background: var(--maiz); color: var(--cacao); }
+  .servicio__icon--jade { background: var(--jade); color: var(--papel); }
+  .servicio__icon--cacao { background: var(--cacao); color: var(--papel); }
+  .servicio__title {
+    margin-top: 1.25rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+  .servicio__text {
+    margin-top: 0.55rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--ink-soft);
+  }
+
+  @media (max-width: 1000px) {
+    .servicios__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .servicios__grid { grid-template-columns: 1fr; gap: 2.25rem; }
+    .servicio {
+      display: grid;
+      grid-template-columns: 4rem 1fr;
+      column-gap: 1.1rem;
+      align-items: start;
+    }
+    .servicio__icon { width: 4rem; height: 4rem; grid-row: span 2; }
+    .servicio__icon :global(svg) { width: 28px; height: 28px; }
+    .servicio__title { margin-top: 0.2rem; font-size: 1.35rem; }
+  }
+</style>

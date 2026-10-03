@@ -1,0 +1,33 @@
+---
+// Tres círculos iguales (D = 100): centros superiores separados 0,73 D,
+// círculo inferior desciende 0,58 D. Los cruces son colores por multiplicación.
+interface Props {
+  size?: number | string;
+  class?: string;
+}
+const { size = 40, class: className } = Astro.props;
+const id = `iso-${Math.random().toString(36).slice(2, 8)}`;
+const c = { t: '#D2532C', m: '#E8A922', j: '#1F7A73', tm: '#BF3706', tj: '#1A2814', mj: '#1C510F', tmj: '#171A03' };
+---
+<svg
+  class={className}
+  viewBox="0 0 173 158"
+  width={size}
+  height={typeof size === 'number' ? Math.round((size * 158) / 173) : undefined}
+  aria-hidden="true"
+  focusable="false"
+>
+  <defs>
+    <clipPath id={`${id}-a`}><circle cx="50" cy="50" r="50" /></clipPath>
+    <clipPath id={`${id}-b`}><circle cx="123" cy="50" r="50" /></clipPath>
+  </defs>
+  <circle cx="50" cy="50" r="50" fill={c.t} />
+  <circle cx="123" cy="50" r="50" fill={c.m} />
+  <circle cx="86.5" cy="108" r="50" fill={c.j} />
+  <circle cx="123" cy="50" r="50" fill={c.tm} clip-path={`url(#${id}-a)`} />
+  <circle cx="86.5" cy="108" r="50" fill={c.tj} clip-path={`url(#${id}-a)`} />
+  <circle cx="86.5" cy="108" r="50" fill={c.mj} clip-path={`url(#${id}-b)`} />
+  <g clip-path={`url(#${id}-a)`}>
+    <circle cx="86.5" cy="108" r="50" fill={c.tmj} clip-path={`url(#${id}-b)`} />
+  </g>
+</svg>

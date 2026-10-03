@@ -1,0 +1,12 @@
+// Despliegue en Cloudflare Workers (sitio estático)
+{
+  "name": "geroamigos",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist"
+  },
+  "routes": [
+    { "pattern": "geroamigos.com", "custom_domain": true },
+    { "pattern": "www.geroamigos.com", "custom_domain": true }
+  ]
+}

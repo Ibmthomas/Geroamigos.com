@@ -1,0 +1,232 @@
+---
+import { Image } from 'astro:assets';
+import foto from '../assets/img/persona-mayor-bosque.jpg';
+import Icon from './Icon.astro';
+
+const pills = [
+  { label: 'Longevidad', tone: 'terracota', pos: 'l1' },
+  { label: 'Persona mayor', tone: 'papel', pos: 'l2' },
+  { label: 'Gerontología', tone: 'jade', pos: 'l3' },
+  { label: 'Silver economy', tone: 'maiz', pos: 'r1' },
+  { label: 'Tecnología', tone: 'cacao', pos: 'r2' },
+];
+---
+<section class="hero" aria-labelledby="hero-title">
+  <span class="hero__deco hero__deco--jade" aria-hidden="true"></span>
+  <span class="hero__deco hero__deco--maiz" aria-hidden="true"></span>
+
+  <div class="wrap hero__inner">
+    <h1 id="hero-title" class="hero__title">
+      Longevidad activa con <span>voz latina</span>
+    </h1>
+    <p class="hero__lead">
+      Somos una red de amigos de la gerontología latinoamericana. Educamos y asesoramos a
+      instituciones, profesionales y familias para una longevidad activa y sin discriminaciones.
+    </p>
+
+    <div class="hero__stage">
+      <div class="hero__photo">
+        <span class="hero__dot hero__dot--terracota" aria-hidden="true"></span>
+        <span class="hero__dot hero__dot--maiz" aria-hidden="true"></span>
+        <Image
+          src={foto}
+          alt="Hombre mayor sonriendo mientras escucha música en un bosque"
+          widths={[300, 440, 600, 880]}
+          sizes="(max-width: 700px) 280px, 440px"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+
+      <ul class="hero__pills" aria-label="Temas">
+        {pills.map((p) => (
+          <li class:list={['pill', `pill--${p.tone}`, `pill--${p.pos}`]}>
+            <span class="pill__dot" aria-hidden="true"></span>{p.label}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div class="hero__actions">
+      <a class="btn btn--primary" href="#servicios">
+        Conoce nuestros servicios <Icon name="flecha" size={20} />
+      </a>
+      <a class="btn btn--ghost" href="#recursos">Ver charlas</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(2.5rem, 6vw, 4.5rem) clamp(3.5rem, 7vw, 5.5rem);
+  }
+  .hero__inner {
+    position: relative;
+    text-align: center;
+  }
+  .hero__title {
+    font-size: clamp(2.6rem, 6.6vw, 5.4rem);
+    letter-spacing: -0.045em;
+  }
+  .hero__title span {
+    color: var(--terracota);
+  }
+  .hero__lead {
+    max-width: 52ch;
+    margin: 1.4rem auto 0;
+    font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
+    color: var(--ink-soft);
+  }
+
+  /* Círculos decorativos de fondo (tintes planos, sin degradados) */
+  .hero__deco {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero__deco--jade {
+    width: clamp(220px, 30vw, 420px);
+    aspect-ratio: 1;
+    right: calc(clamp(220px, 30vw, 420px) * -0.32);
+    top: clamp(6rem, 12vw, 8rem);
+    background: var(--jade-suave);
+  }
+  .hero__deco--maiz {
+    width: clamp(220px, 28vw, 380px);
+    aspect-ratio: 1;
+    left: calc(clamp(220px, 28vw, 380px) * -0.35);
+    bottom: calc(clamp(220px, 28vw, 380px) * -0.45);
+    background: var(--maiz-suave);
+  }
+
+  .hero__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: clamp(380px, 40vw, 500px);
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+  .hero__photo {
+    position: relative;
+    width: clamp(260px, 32vw, 420px);
+    aspect-ratio: 1;
+  }
+  .hero__photo :global(img) {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 58% 30%;
+    border-radius: 50%;
+    border: clamp(5px, 0.7vw, 8px) solid var(--papel);
+  }
+  .hero__dot {
+    position: absolute;
+    border-radius: 50%;
+  }
+  .hero__dot--terracota {
+    width: 48%;
+    aspect-ratio: 1;
+    left: -18%;
+    top: -6%;
+    background: var(--terracota);
+  }
+  .hero__dot--maiz {
+    width: 44%;
+    aspect-ratio: 1;
+    right: -14%;
+    bottom: -10%;
+    background: var(--maiz);
+  }
+
+  .hero__pills {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .pill {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1.35rem;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.05rem, 1.5vw, 1.4rem);
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    box-shadow: 0 6px 16px rgba(42, 29, 20, 0.14);
+    animation: float 7s ease-in-out infinite;
+  }
+  .pill__dot {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-radius: 50%;
+    flex: none;
+  }
+  .pill--terracota { background: var(--terracota); color: #fff; }
+  .pill--terracota .pill__dot { background: var(--maiz); }
+  .pill--papel { background: var(--papel); color: var(--cacao); border: 2px solid var(--cacao); }
+  .pill--papel .pill__dot { background: var(--terracota); }
+  .pill--jade { background: var(--jade); color: #fff; }
+  .pill--jade .pill__dot { background: var(--maiz); }
+  .pill--maiz { background: var(--maiz); color: var(--cacao); }
+  .pill--maiz .pill__dot { background: var(--cacao); }
+  .pill--cacao { background: var(--cacao); color: var(--papel); }
+  .pill--cacao .pill__dot { background: var(--jade); }
+
+  .pill--l1 { --r: -6deg; left: 8%; top: 4%; }
+  .pill--l2 { --r: 4deg; left: 3%; top: 38%; animation-delay: -2s; }
+  .pill--l3 { --r: -4deg; left: 10%; top: 72%; animation-delay: -4s; }
+  .pill--r1 { --r: 5deg; right: 6%; top: 8%; animation-delay: -1s; }
+  .pill--r2 { --r: -5deg; right: 10%; top: 52%; animation-delay: -3s; }
+
+  @keyframes float {
+    0%, 100% { transform: rotate(var(--r)) translateY(0); }
+    50% { transform: rotate(var(--r)) translateY(-8px); }
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.9rem;
+    margin-top: clamp(2rem, 4vw, 2.75rem);
+  }
+
+  /* Tablet y móvil: las etiquetas pasan a una fila bajo la foto */
+  @media (max-width: 960px) {
+    .hero__stage {
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      min-height: 0;
+    }
+    .hero__pills {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.7rem 0.6rem;
+      max-width: 34rem;
+    }
+    .pill {
+      position: static;
+      padding: 0.55rem 1.05rem;
+    }
+  }
+  @media (max-width: 700px) {
+    .hero__deco--jade {
+      width: 170px;
+      right: -105px;
+      top: 0.75rem;
+    }
+  }
+  @media (max-width: 520px) {
+    .hero__actions .btn {
+      width: 100%;
+    }
+  }
+</style>

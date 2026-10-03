@@ -1,0 +1,71 @@
+---
+import Isotipo from './Isotipo.astro';
+import Icon from './Icon.astro';
+import { SITE, mailto } from '../config';
+---
+<section id="contacto" class="contacto section" aria-labelledby="contacto-title">
+  <div class="wrap contacto__grid">
+    <div>
+      <p class="eyebrow">Contacto</p>
+      <h2 id="contacto-title" class="h2">Agenda una asesoría</h2>
+      <p class="lead contacto__lead">
+        Cuéntanos qué necesita tu institución, residencia o equipo, y coordinamos una
+        conversación.
+      </p>
+      <div class="contacto__actions">
+        <a class="btn btn--primary" href={mailto('Quiero agendar una asesoría · GeroAmigos')}>
+          <Icon name="correo" size={22} /> Escríbenos
+        </a>
+        <a class="contacto__mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      </div>
+      <p class="contacto__para">Instituciones · Residencias · Profesionales · Familias</p>
+    </div>
+
+    <div class="contacto__art" aria-hidden="true">
+      <Isotipo size="100%" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .contacto__grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  .contacto .h2 {
+    font-size: clamp(2.6rem, 6vw, 4.75rem);
+  }
+  .contacto__lead {
+    margin-top: 1.25rem;
+  }
+  .contacto__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: 2.25rem;
+  }
+  .contacto__mail {
+    font-weight: 600;
+    color: var(--jade);
+    text-underline-offset: 4px;
+  }
+  .contacto__para {
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .contacto__art {
+    justify-self: center;
+    width: min(100%, 26rem);
+  }
+  @media (max-width: 860px) {
+    .contacto__grid { grid-template-columns: 1fr; }
+    .contacto__art { width: 11rem; justify-self: start; order: -1; }
+  }
+</style>
