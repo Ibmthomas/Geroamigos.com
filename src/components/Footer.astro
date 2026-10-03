@@ -1,0 +1,79 @@
+---
+import Logo from './Logo.astro';
+import { NAV, SITE } from '../config';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <div class="wrap footer__grid">
+    <div class="footer__brand">
+      <Logo tone="claro" />
+      <p class="footer__tagline">{SITE.tagline}</p>
+    </div>
+
+    <nav aria-label="Pie de página">
+      <ul class="footer__nav">
+        {NAV.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="footer__contact">
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <span>{SITE.social}</span>
+    </div>
+  </div>
+
+  <div class="wrap footer__legal">
+    <p>© {year} GeroAmigos. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--cacao);
+    color: var(--algodon);
+    padding-block: clamp(3.5rem, 7vw, 5rem) 2rem;
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  .footer__tagline {
+    margin-top: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #c9b9a3;
+  }
+  .footer__nav {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .footer a {
+    text-decoration: none;
+  }
+  .footer a:hover {
+    color: var(--maiz);
+  }
+  .footer__contact {
+    display: grid;
+    gap: 0.6rem;
+  }
+  .footer__legal {
+    margin-top: clamp(2.5rem, 5vw, 4rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(243, 232, 214, 0.18);
+    font-size: 0.9375rem;
+    color: #c9b9a3;
+  }
+  @media (max-width: 760px) {
+    .footer__grid { grid-template-columns: 1fr; }
+  }
+</style>

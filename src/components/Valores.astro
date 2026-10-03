@@ -1,0 +1,88 @@
+---
+const valores = [
+  { n: '01', titulo: 'Visión', texto: 'Mirar el envejecimiento a escala regional y global.', tone: 'terracota' },
+  { n: '02', titulo: 'Innovación', texto: 'Tecnología y nuevas formas de cuidar.', tone: 'maiz' },
+  { n: '03', titulo: 'Educación', texto: 'Compartir saber con instituciones, profesionales y familias.', tone: 'jade' },
+  { n: '04', titulo: 'Inclusión', texto: 'Una longevidad activa, sin discriminaciones.', tone: 'cacao' },
+];
+---
+<section class="valores section" aria-labelledby="valores-title">
+  <div class="wrap">
+    <div class="valores__head">
+      <h2 id="valores-title" class="h2">Muchas manos, un mismo tejido.</h2>
+      <p class="lead">
+        Tres círculos que se cruzan: profesionales, instituciones y personas mayores. Donde se
+        tocan nace un color nuevo: la inclusión hecha forma.
+      </p>
+    </div>
+
+    <ul class="valores__grid">
+      {valores.map((v) => (
+        <li class:list={['valor', `valor--${v.tone}`]}>
+          <span class="valor__n">{v.n}</span>
+          <h3 class="valor__title">{v.titulo}</h3>
+          <p class="valor__text">{v.texto}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .valores {
+    background: var(--algodon);
+  }
+  .valores__head {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 2rem 4rem;
+    align-items: end;
+  }
+  .valores__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin: clamp(2.5rem, 5vw, 3.5rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .valor {
+    display: flex;
+    flex-direction: column;
+    min-height: 19rem;
+    padding: 1.6rem 1.6rem 1.8rem;
+    border-radius: var(--radius);
+  }
+  .valor__n {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    margin-bottom: auto;
+  }
+  .valor__title {
+    font-size: clamp(1.9rem, 2.6vw, 2.35rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    margin-top: 2.5rem;
+  }
+  .valor__text {
+    margin-top: 0.7rem;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+  .valor--terracota { background: var(--terracota); color: #fff; }
+  .valor--maiz { background: var(--maiz); color: var(--cacao); }
+  .valor--jade { background: var(--jade); color: #fff; }
+  .valor--cacao { background: var(--cacao); color: var(--papel); }
+  .valor--cacao .valor__n { color: var(--maiz); }
+
+  @media (max-width: 960px) {
+    .valores__head { grid-template-columns: 1fr; }
+    .valores__grid { grid-template-columns: repeat(2, 1fr); }
+    .valor { min-height: 15rem; }
+  }
+  @media (max-width: 560px) {
+    .valores__grid { grid-template-columns: 1fr; }
+    .valor { min-height: 0; }
+    .valor__title { margin-top: 1.75rem; }
+  }
+</style>

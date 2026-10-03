@@ -1,0 +1,207 @@
+/* GeroAmigos · tokens del Manual de marca 2026 */
+:root {
+  /* Paleta principal */
+  --terracota: #d2532c;
+  --maiz: #e8a922;
+  --jade: #1f7a73;
+  --cacao: #2a1d14;
+
+  /* Fondos */
+  --algodon: #f3e8d6;
+  --papel: #fbf6ee;
+
+  /* Colores de encuentro (cruce por multiplicación): solo tonos de apoyo */
+  --fuego: #bf3706;
+  --monte: #1c510f;
+  --noche: #1a2814;
+
+  /* Tintes para círculos decorativos */
+  --jade-suave: #c4dbd2;
+  --maiz-suave: #f6dca4;
+
+  --ink: var(--cacao);
+  --ink-soft: #6e5b4b;
+  --line: #e3d6c2;
+
+  --font-display: 'Bricolage Grotesque Variable', 'Arial Narrow', system-ui, sans-serif;
+  --font-body: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  --radius: 10px;
+  --wrap: 1180px;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
+  --section: clamp(4.5rem, 10vw, 8rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 3px solid var(--jade);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--wrap));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: var(--section);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fuego);
+  margin-bottom: 1rem;
+}
+
+.h2 {
+  font-size: clamp(2.25rem, 5.2vw, 4rem);
+}
+
+.lead {
+  font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+/* Botones: texto ≥ 19px en negrita para cumplir contraste de texto grande sobre Terracota */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  font-family: var(--font-body);
+  font-size: 1.1875rem;
+  font-weight: 700;
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn--primary {
+  background: var(--terracota);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: var(--fuego);
+}
+
+.btn--dark {
+  background: var(--cacao);
+  color: var(--papel);
+}
+
+.btn--dark:hover {
+  background: var(--noche);
+}
+
+.btn--ghost {
+  border-color: var(--cacao);
+  color: var(--cacao);
+  background: transparent;
+}
+
+.btn--ghost:hover {
+  background: var(--cacao);
+  color: var(--papel);
+}
+
+.btn--light {
+  background: var(--papel);
+  color: var(--cacao);
+}
+
+.btn--light:hover {
+  background: var(--algodon);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

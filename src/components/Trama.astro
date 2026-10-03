@@ -1,0 +1,15 @@
+---
+// Franja con el patrón "Trama" (Manual de marca · Conceptos gráficos)
+interface Props {
+  height?: string;
+}
+const { height = 'clamp(40px, 5vw, 64px)' } = Astro.props;
+---
+<div class="trama" style={`--h: ${height}`} aria-hidden="true"></div>
+
+<style>
+  .trama {
+    height: var(--h);
+    background: url('/trama.svg') repeat-x left center / auto 100%;
+  }
+</style>

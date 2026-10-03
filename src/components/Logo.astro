@@ -1,0 +1,37 @@
+---
+import Isotipo from './Isotipo.astro';
+
+interface Props {
+  // color: sobre Papel/Algodón · claro: sobre Cacao o fotografía
+  tone?: 'color' | 'claro';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+}
+const { tone = 'color', size = 'md', href = '/' } = Astro.props;
+const iso = { sm: 30, md: 40, lg: 64 }[size];
+---
+<a class:list={['logo', `logo--${tone}`, `logo--${size}`]} href={href} aria-label="GeroAmigos, ir al inicio">
+  <Isotipo size={iso} />
+  <span class="logo__word" aria-hidden="true">Gero<span>Amigos</span></span>
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+  .logo--sm { font-size: 1.3rem; }
+  .logo--md { font-size: 1.6rem; }
+  .logo--lg { font-size: 2.6rem; }
+
+  .logo--color .logo__word { color: var(--cacao); }
+  .logo--color .logo__word span { color: var(--terracota); }
+  .logo--claro .logo__word { color: var(--papel); }
+  .logo--claro .logo__word span { color: var(--maiz); }
+</style>

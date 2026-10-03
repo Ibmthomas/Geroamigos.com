@@ -1,0 +1,143 @@
+---
+import { Image } from 'astro:assets';
+import foto from '../assets/img/cuidado-abrazo.jpg';
+
+// "Hilos": barras redondeadas de color para listar con quién trabajamos.
+const hilos = [
+  [
+    { label: 'Instituciones públicas y privadas', tone: 'terracota', grow: 3 },
+    { label: 'Gobiernos', tone: 'maiz', grow: 1 },
+  ],
+  [
+    { label: 'ONG', tone: 'jade', grow: 1 },
+    { label: 'Residencias de personas mayores', tone: 'terracota', grow: 3 },
+  ],
+  [
+    { label: 'Profesionales de la salud', tone: 'maiz', grow: 2 },
+    { label: 'Gerontólogos', tone: 'jade', grow: 1.5 },
+  ],
+  [
+    { label: 'Psicogerontólogos', tone: 'cacao', grow: 1.5 },
+    { label: 'Familias', tone: 'jade', grow: 1 },
+  ],
+];
+---
+<section id="nosotros" class="nosotros section" aria-labelledby="nosotros-title">
+  <div class="wrap nosotros__grid">
+    <div class="nosotros__media">
+      <span class="nosotros__dot" aria-hidden="true"></span>
+      <Image
+        src={foto}
+        alt="Mujer joven abraza con cariño a una mujer mayor en una cocina"
+        widths={[480, 720, 1080]}
+        sizes="(max-width: 900px) 100vw, 540px"
+      />
+    </div>
+
+    <div class="nosotros__body">
+      <p class="eyebrow">Nosotros</p>
+      <h2 id="nosotros-title" class="h2">Un grupo de amigos de la gerontología latinoamericana</h2>
+      <p class="nosotros__text">
+        GeroAmigos reúne a profesionales de la gerontología de distintos países de Latinoamérica.
+        Nos une una idea simple: la longevidad se vive mejor cuando es activa, sin
+        discriminaciones y con identidad propia.
+      </p>
+      <p class="nosotros__text">
+        Queremos mostrar lo que se está haciendo en la región en cuidado, vida social,
+        entretenimiento y tecnología para las personas mayores, y llevar ese conocimiento a
+        quienes cuidan y deciden todos los días.
+      </p>
+
+      <h3 class="nosotros__sub">Con quién trabajamos</h3>
+      <ul class="hilos">
+        {hilos.map((fila) => (
+          <li class="hilos__fila">
+            {fila.map((h) => (
+              <span class:list={['hilo', `hilo--${h.tone}`]} style={`flex-grow: ${h.grow}`}>{h.label}</span>
+            ))}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .nosotros__grid {
+    display: grid;
+    grid-template-columns: 0.9fr 1fr;
+    gap: clamp(2.5rem, 6vw, 5.5rem);
+    align-items: center;
+  }
+  .nosotros__media {
+    position: relative;
+  }
+  .nosotros__media :global(img) {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 62% 40%;
+    border-radius: var(--radius);
+  }
+  .nosotros__dot {
+    position: absolute;
+    width: 38%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--jade);
+    left: -12%;
+    bottom: -8%;
+  }
+  .nosotros__body .h2 {
+    font-size: clamp(2.1rem, 4.4vw, 3.4rem);
+  }
+  .nosotros__text {
+    margin-top: 1.25rem;
+    color: var(--ink-soft);
+    max-width: 52ch;
+  }
+  .nosotros__sub {
+    margin-top: 2.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .hilos {
+    display: grid;
+    gap: 0.65rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hilos__fila {
+    display: flex;
+    gap: 0.65rem;
+  }
+  .hilo {
+    flex-basis: 0;
+    min-width: max-content;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    font-size: 1.1875rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .hilo--terracota { background: var(--terracota); color: #fff; }
+  .hilo--maiz { background: var(--maiz); color: var(--cacao); }
+  .hilo--jade { background: var(--jade); color: #fff; }
+  .hilo--cacao { background: var(--cacao); color: var(--papel); }
+
+  @media (max-width: 900px) {
+    .nosotros__grid { grid-template-columns: 1fr; }
+    .nosotros__media { max-width: 30rem; margin-left: 8%; }
+    .nosotros__media :global(img) { aspect-ratio: 4 / 3; }
+  }
+  @media (max-width: 560px) {
+    .hilos__fila { flex-wrap: wrap; }
+    .hilo { min-width: 0; flex-basis: auto; }
+  }
+</style>

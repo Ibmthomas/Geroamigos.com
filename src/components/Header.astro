@@ -1,0 +1,156 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { NAV } from '../config';
+---
+<header class="header" data-header>
+  <div class="wrap header__bar">
+    <Logo />
+
+    <button
+      class="header__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="menu-principal"
+      data-menu-toggle
+    >
+      <span class="sr-only">Abrir menú</span>
+      <Icon name="menu" size={26} class="icon-open" />
+      <Icon name="cerrar" size={26} class="icon-close" />
+    </button>
+
+    <nav class="header__nav" id="menu-principal" aria-label="Principal" data-menu>
+      <ul>
+        {NAV.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
+      </ul>
+      <a class="btn btn--dark header__cta" href="#contacto">Agenda una asesoría</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
+  const menu = document.querySelector<HTMLElement>('[data-menu]');
+
+  const setOpen = (open: boolean) => {
+    toggle?.setAttribute('aria-expanded', String(open));
+    header?.classList.toggle('is-open', open);
+    const label = toggle?.querySelector('.sr-only');
+    if (label) label.textContent = open ? 'Cerrar menú' : 'Abrir menú';
+  };
+
+  toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
+  menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+</script>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--papel);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s;
+  }
+  .header.is-scrolled {
+    border-bottom-color: var(--line);
+  }
+  .header__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 5rem;
+  }
+  .header__nav {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+  }
+  .header__nav ul {
+    display: flex;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .header__nav ul a {
+    font-weight: 500;
+    font-size: 1.0625rem;
+    text-decoration: none;
+    padding-block: 0.4rem;
+    background: linear-gradient(var(--terracota), var(--terracota)) no-repeat left bottom / 0 2px;
+    transition: background-size 0.25s;
+  }
+  .header__nav ul a:hover {
+    background-size: 100% 2px;
+  }
+  .header__cta {
+    min-height: 2.9rem;
+    padding-inline: 1.3rem;
+    font-size: 1.0625rem;
+  }
+  .header__toggle {
+    display: none;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--algodon);
+    color: var(--cacao);
+    cursor: pointer;
+  }
+  .header__toggle :global(.icon-close) {
+    display: none;
+  }
+
+  @media (max-width: 880px) {
+    .header__toggle {
+      display: grid;
+    }
+    .header__nav {
+      position: absolute;
+      inset: 100% 0 auto 0;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.25rem;
+      padding: 1rem var(--gutter) 2rem;
+      background: var(--papel);
+      border-bottom: 1px solid var(--line);
+      display: none;
+    }
+    .header.is-open .header__nav {
+      display: flex;
+    }
+    .header.is-open :global(.icon-open) {
+      display: none;
+    }
+    .header.is-open :global(.icon-close) {
+      display: block;
+    }
+    .header__nav ul {
+      flex-direction: column;
+      gap: 0;
+    }
+    .header__nav ul a {
+      display: block;
+      padding-block: 0.9rem;
+      font-size: 1.25rem;
+      border-bottom: 1px solid var(--line);
+      background: none;
+    }
+    .header__cta {
+      min-height: 3.25rem;
+      font-size: 1.1875rem;
+    }
+  }
+</style>
