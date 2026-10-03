@@ -6,7 +6,8 @@ export const SITE = {
     'GeroAmigos es una red de profesionales de la gerontología en Latinoamérica. Charlas, consultorías y asesorías para instituciones, residencias, profesionales y familias.',
   url: 'https://geroamigos.com',
   email: 'hablemos@geroamigos.com',
-  social: '@geroamigos',
+  social: '@geroa_migos',
+  instagram: 'https://www.instagram.com/geroa_migos/',
 };
 
 export const NAV = [
