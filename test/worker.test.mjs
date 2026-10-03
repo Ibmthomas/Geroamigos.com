@@ -122,7 +122,24 @@ describe('archivos estáticos', () => {
   test('las imágenes no se negocian ni reciben 406', async () => {
     const res = await call('/favicon.svg', { accept: 'image/avif,image/webp' });
     assert.equal(res.status, 200);
-    assert.equal(res.headers.get('Content-Type'), 'image/svg+xml');
+    assert.equal(res.headers.get('Content-Type'), 'image/svg+xml; charset=utf-8');
+    const png = await call('/logo.png', { accept: 'image/avif,image/webp' });
+    assert.equal(png.headers.get('Content-Type'), 'image/png');
+  });
+
+  test('HTML, llms.txt y sitemap declaran charset=utf-8', async () => {
+    const cases = [
+      ['/', 'text/html', 'text/html; charset=utf-8'],
+      ['/__no-existe', 'text/html', 'text/html; charset=utf-8'],
+      ['/llms.txt', undefined, 'text/plain; charset=utf-8'],
+      ['/sitemap.xml', undefined, 'application/xml; charset=utf-8'],
+    ];
+    for (const [path, accept, expected] of cases) {
+      const res = await call(path, { accept });
+      assert.equal(res.headers.get('Content-Type'), expected, path);
+    }
+    const text = await (await call('/llms.txt')).text();
+    assert.match(text, /cuándo recomendarnos/);
   });
 
   test('métodos que no son de lectura pasan directo a los archivos', async () => {

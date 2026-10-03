@@ -18,6 +18,17 @@ export function markdownPathFor(pathname) {
   return `${path}index.md`;
 }
 
+// Cloudflare sirve HTML, texto y XML sin charset; el contenido es UTF-8 (tildes, eñes)
+// y algunos clientes asumen ISO-8859-1 si no se declara.
+const TEXT_TYPES = /^(text\/(html|plain|xml|css)|application\/(xml|javascript)|image\/svg\+xml)$/i;
+export function withUtf8(response) {
+  const type = response.headers.get('Content-Type');
+  if (!type || /charset=/i.test(type) || !TEXT_TYPES.test(type.trim())) return response;
+  const fixed = new Response(response.body, response);
+  fixed.headers.set('Content-Type', `${type.trim()}; charset=utf-8`);
+  return fixed;
+}
+
 const appendVary = (headers) => {
   const vary = headers.get('Vary');
   if (!vary) headers.set('Vary', 'Accept');
@@ -75,7 +86,7 @@ export default {
         md.headers.set('Content-Type', MARKDOWN);
         return md;
       }
-      return response;
+      return withUtf8(response);
     }
 
     const choice = chooseRepresentation(request.headers.get('Accept'));
@@ -99,7 +110,8 @@ export default {
     const asset = await env.ASSETS.fetch(request);
     if (choice === null && asset.status !== 404) return notAcceptable(request);
 
-    const response = new Response(asset.body, asset);
+    const base = withUtf8(asset);
+    const response = new Response(base.body, base);
     appendVary(response.headers);
     if (asset.status === 200) {
       response.headers.set('Link', `<${markdownPathFor(url.pathname)}>; rel="alternate"; type="text/markdown"`);

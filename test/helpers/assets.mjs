@@ -8,10 +8,11 @@ import { fileURLToPath } from 'node:url';
 
 export const DIST = fileURLToPath(new URL('../../dist/', import.meta.url));
 
+// Tipos tal como los entrega Cloudflare: sin charset en HTML, texto ni XML.
 const TYPES = {
-  '.html': 'text/html; charset=utf-8',
+  '.html': 'text/html',
   '.md': 'text/markdown',
-  '.txt': 'text/plain; charset=utf-8',
+  '.txt': 'text/plain',
   '.xml': 'application/xml',
   '.svg': 'image/svg+xml',
   '.jpg': 'image/jpeg',
