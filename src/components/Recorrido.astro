@@ -1,0 +1,207 @@
+---
+// Recorrido por la red: mientras bajas, el mini mapa "vuela" de país en país (norte → sur)
+// y la lista marca el país que estás viendo.
+import MapaLatam from './MapaLatam.astro';
+import PaisSection from './PaisSection.astro';
+import { RED_INTRO } from '../data/home';
+import { TONO_HEX } from '../data/paises';
+import { focusTransform, networkCountries } from '../lib/latam-map';
+
+const num = (n: number) => String(n).padStart(2, '0');
+---
+<section id="paises" class="recorrido" aria-labelledby="paises-titulo" data-recorrido>
+  <div class="wrap recorrido__head">
+    <p class="eyebrow">{RED_INTRO.eyebrow}</p>
+    <h2 id="paises-titulo" class="h2">{RED_INTRO.title}</h2>
+    <p class="lead">{RED_INTRO.lead}</p>
+  </div>
+
+  <div class="wrap recorrido__grid">
+    <aside class="recorrido__rail" aria-label="Países de la red">
+      <div class="rail">
+        <div class="rail__mapa">
+          <MapaLatam variant="mini" />
+        </div>
+        <ol class="rail__lista">
+          {networkCountries.map((p, i) => (
+            <li>
+              <a href={`#pais-${p.slug}`} data-rail={p.slug} style={`--tono: ${TONO_HEX[p.tono]}`}>
+                <span class="rail__num">{num(i + 1)}</span>
+                <span class="rail__dot" aria-hidden="true"></span>
+                {p.nombre}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </aside>
+
+    <div class="recorrido__paises">
+      {networkCountries.map((p, i) => (
+        <PaisSection pais={p} index={i} focus={focusTransform(p.box)} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-recorrido]');
+  if (root) {
+    const mundo = root.querySelector<SVGGElement>('[data-mapa-mundo]');
+    const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-rail]')];
+    const paths = [...root.querySelectorAll<SVGPathElement>('.mapa--mini [data-pais]')];
+    const sections = [...root.querySelectorAll<HTMLElement>('[data-pais-section]')];
+
+    const activate = (section: HTMLElement) => {
+      const slug = section.dataset.paisSection;
+      root.dataset.activo = slug;
+      links.forEach((a) => {
+        const on = a.dataset.rail === slug;
+        a.classList.toggle('is-active', on);
+        if (on) a.setAttribute('aria-current', 'location');
+        else a.removeAttribute('aria-current');
+        // En móvil la lista es una barra horizontal: mantener visible el país activo
+        if (on && window.matchMedia('(max-width: 900px)').matches) {
+          a.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+        }
+      });
+      paths.forEach((p) => p.classList.toggle('is-active', p.dataset.pais === slug));
+      if (mundo) mundo.style.transform = section.dataset.focus ?? '';
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && activate(e.target as HTMLElement)),
+      { rootMargin: '-45% 0px -45% 0px' },
+    );
+    sections.forEach((s) => observer.observe(s));
+  }
+</script>
+
+<style>
+  .recorrido {
+    padding-top: var(--section);
+  }
+  .recorrido__head {
+    max-width: 46rem;
+    text-align: left;
+  }
+  .recorrido__head .lead {
+    margin-top: 1.25rem;
+  }
+  .recorrido__grid {
+    display: grid;
+    grid-template-columns: minmax(15rem, 0.62fr) 1.6fr;
+    gap: clamp(2rem, 4vw, 3.5rem);
+    margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  }
+  .recorrido__rail {
+    position: relative;
+  }
+  .rail {
+    position: sticky;
+    top: 6.5rem;
+    padding-top: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .rail__mapa {
+    width: min(100%, 19rem);
+    margin-inline: auto;
+    padding: 1rem;
+    border-radius: 50%;
+    background: var(--algodon);
+    aspect-ratio: 1;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+  }
+  .rail__mapa :global(.mapa) {
+    width: 72%;
+  }
+  .rail__lista {
+    display: grid;
+    gap: 0.25rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .rail__lista a {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 999px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.125rem;
+    text-decoration: none;
+    color: var(--ink-soft);
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .rail__num {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+  .rail__dot {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--tono);
+    transition: transform 0.3s;
+  }
+  .rail__lista a:hover {
+    color: var(--ink);
+  }
+  .rail__lista a.is-active {
+    background: var(--cacao);
+    color: var(--papel);
+  }
+  .rail__lista a.is-active .rail__num {
+    color: var(--maiz);
+  }
+  .rail__lista a.is-active .rail__dot {
+    transform: scale(1.3);
+  }
+
+  /* Móvil y tablet: barra de países fija bajo el encabezado */
+  @media (max-width: 900px) {
+    .recorrido__grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+    .recorrido__rail {
+      min-width: 0;
+      position: sticky;
+      top: 5rem;
+      z-index: 20;
+      margin-inline: calc(var(--gutter) * -1);
+      background: var(--papel);
+      border-bottom: 1px solid var(--line);
+    }
+    .rail {
+      position: static;
+      padding: 0;
+    }
+    .rail__mapa {
+      display: none;
+    }
+    .rail__lista {
+      display: flex;
+      gap: 0.35rem;
+      margin: 0;
+      padding: 0.6rem var(--gutter);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .rail__lista::-webkit-scrollbar {
+      display: none;
+    }
+    .rail__lista a {
+      white-space: nowrap;
+      font-size: 1rem;
+      padding: 0.45rem 0.85rem;
+    }
+    .rail__num {
+      display: none;
+    }
+  }
+</style>

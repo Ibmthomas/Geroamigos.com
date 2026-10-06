@@ -1,0 +1,240 @@
+---
+// Mapa de Latinoamérica con los países de la red.
+// - hero: grande, interactivo (hover enlazado entre país y etiqueta, clic lleva a su sección).
+//   Define una sola vez el dibujo de los países de contexto (#latam-base).
+// - mini: acompaña el recorrido; el script del recorrido resalta el país activo y "vuela" hacia él.
+import { MAP_H, MAP_W, baseCountries, networkCountries } from '../lib/latam-map';
+import { TONO_HEX } from '../data/paises';
+
+interface Props {
+  variant: 'hero' | 'mini';
+}
+const { variant } = Astro.props;
+const isHero = variant === 'hero';
+
+// Posición de cada etiqueta respecto del centro del país (unidades del mapa).
+// Costa Rica y Chile son angostos: su etiqueta va afuera, con una línea guía.
+const LABELS: Record<string, { dx: number; dy: number; outside?: boolean }> = {
+  mexico: { dx: 4, dy: -16 },
+  'costa-rica': { dx: -104, dy: 30, outside: true },
+  colombia: { dx: -38, dy: 16 },
+  venezuela: { dx: 52, dy: -26 },
+  peru: { dx: -12, dy: 4 },
+  chile: { dx: -92, dy: 18, outside: true },
+};
+
+const paises = networkCountries.map((p, i) => {
+  const l = LABELS[p.slug] ?? { dx: 0, dy: 0 };
+  return {
+    ...p,
+    i,
+    hex: TONO_HEX[p.tono],
+    lx: p.cx + l.dx,
+    ly: p.cy + l.dy,
+    outside: Boolean(l.outside),
+  };
+});
+const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
+---
+<div class:list={['mapa', `mapa--${variant}`]} data-mapa={variant}>
+  <svg
+    class="mapa__svg"
+    viewBox={`0 0 ${MAP_W} ${MAP_H}`}
+    role={isHero ? 'group' : 'img'}
+    aria-label={isHero ? 'Mapa de Latinoamérica con los países de la red GeroAmigos' : 'Ubicación del país en el mapa'}
+  >
+    {isHero && (
+      <defs>
+        <g id="latam-base">
+          {baseCountries.map((c) => <path d={c.d} vector-effect="non-scaling-stroke" />)}
+        </g>
+      </defs>
+    )}
+    <g class="mapa__mundo" data-mapa-mundo>
+      <use href="#latam-base" class="mapa__base" />
+      {paises.map((p) =>
+        isHero ? (
+          <a
+            href={`#pais-${p.slug}`}
+            class="mapa__pais"
+            data-pais={p.slug}
+            style={`--tono: ${p.hex}; --i: ${p.i}`}
+            aria-label={`${p.nombre}: conocer a los amigos`}
+          >
+            <path d={p.d} vector-effect="non-scaling-stroke" />
+          </a>
+        ) : (
+          <path class="mapa__pais" data-pais={p.slug} d={p.d} style={`--tono: ${p.hex}`} vector-effect="non-scaling-stroke" />
+        ),
+      )}
+      {isHero &&
+        paises
+          .filter((p) => p.outside)
+          .map((p) => (
+            <g class="mapa__guia" data-pais={p.slug} aria-hidden="true">
+              <line x1={p.cx} y1={p.cy} x2={p.lx + 34} y2={p.ly} />
+              <circle cx={p.cx} cy={p.cy} r="3.5" />
+            </g>
+          ))}
+    </g>
+  </svg>
+
+  {isHero && (
+    <ul class="mapa__pills" aria-label="Países de la red">
+      {paises.map((p) => (
+        <li class="mapa__pill-item" style={`left: ${pct(p.lx, MAP_W)}; top: ${pct(p.ly, MAP_H)}; --i: ${p.i}`}>
+          <a class="mapa__pill" href={`#pais-${p.slug}`} data-pais={p.slug} style={`--tono: ${p.hex}`}>
+            <span class="mapa__pill-dot" aria-hidden="true"></span>{p.nombre}
+          </a>
+        </li>
+      ))}
+    </ul>
+  )}
+</div>
+
+<script>
+  // Hover enlazado: al pasar por un país se resalta también su etiqueta (y viceversa).
+  document.querySelectorAll<HTMLElement>('[data-mapa="hero"]').forEach((root) => {
+    const toggle = (slug: string, on: boolean) =>
+      root.querySelectorAll(`[data-pais="${slug}"]`).forEach((el) => el.classList.toggle('is-hover', on));
+    root.querySelectorAll<HTMLElement | SVGElement>('a[data-pais]').forEach((el) => {
+      const slug = el.dataset.pais!;
+      el.addEventListener('pointerenter', () => toggle(slug, true));
+      el.addEventListener('pointerleave', () => toggle(slug, false));
+      el.addEventListener('focus', () => toggle(slug, true));
+      el.addEventListener('blur', () => toggle(slug, false));
+    });
+  });
+</script>
+
+<style>
+  .mapa {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 600 / 820;
+  }
+  .mapa__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .mapa__base {
+    fill: #e3d6c2;
+    stroke: var(--papel);
+    stroke-width: 0.8;
+  }
+  .mapa__mundo {
+    transform-box: view-box;
+    transform-origin: 0 0;
+    transition: transform 0.9s cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  .mapa__pais path,
+  path.mapa__pais {
+    fill: var(--tono);
+    stroke: var(--papel);
+    stroke-width: 0.8;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: transform 0.25s ease, filter 0.25s ease, fill-opacity 0.4s ease;
+  }
+
+  /* Hero: entrada escalonada y hover */
+  .mapa--hero .mapa__pais path {
+    cursor: pointer;
+    animation: pais-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1.2) backwards;
+    animation-delay: calc(var(--i) * 120ms + 250ms);
+  }
+  .mapa--hero .mapa__pais:focus {
+    outline: none;
+  }
+  .mapa--hero .mapa__pais.is-hover path {
+    transform: scale(1.05);
+    filter: drop-shadow(0 6px 10px rgba(42, 29, 20, 0.35));
+    stroke: var(--cacao);
+    stroke-width: 1.4;
+  }
+  .mapa__guia line {
+    stroke: var(--cacao);
+    stroke-width: 1.2;
+    stroke-dasharray: 3 3;
+  }
+  .mapa__guia circle {
+    fill: var(--cacao);
+  }
+  @keyframes pais-in {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+
+  .mapa__pills {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .mapa__pill-item {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    animation: pill-in 0.5s ease backwards;
+    animation-delay: calc(var(--i) * 120ms + 600ms);
+  }
+  .mapa__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: var(--papel);
+    color: var(--cacao);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(0.8rem, 1.2vw, 0.98rem);
+    white-space: nowrap;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(42, 29, 20, 0.16);
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  }
+  .mapa__pill-dot {
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--tono);
+    flex: none;
+  }
+  .mapa__pill.is-hover,
+  .mapa__pill:focus-visible {
+    transform: scale(1.08);
+    background: var(--cacao);
+    color: var(--papel);
+  }
+  @keyframes pill-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -30%);
+    }
+  }
+
+  /* Mini mapa del recorrido: el país activo a todo color, el resto atenuado */
+  .mapa--mini path.mapa__pais {
+    fill-opacity: 0.45;
+  }
+  .mapa--mini path.mapa__pais.is-active {
+    fill-opacity: 1;
+    stroke: var(--cacao);
+    stroke-width: 1.2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mapa__mundo,
+    .mapa__pais path,
+    path.mapa__pais {
+      transition: none;
+    }
+    .mapa--hero .mapa__pais path,
+    .mapa__pill-item {
+      animation: none;
+    }
+  }
+</style>

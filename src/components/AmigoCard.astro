@@ -1,0 +1,264 @@
+---
+import { Image } from 'astro:assets';
+import Icon from './Icon.astro';
+import { fotoDeAmigo } from '../lib/fotos';
+import type { Amigo, Tono } from '../data/paises';
+
+interface Props {
+  amigo: Amigo;
+  tono: Tono;
+  pais?: string;
+  /** Nivel del título según dónde se use la tarjeta */
+  level?: 3 | 4;
+}
+const { amigo, tono, pais, level = 4 } = Astro.props;
+const Heading = level === 3 ? 'h3' : 'h4';
+const foto = fotoDeAmigo(amigo.id);
+// Etiqueta superior: país (en la sección de amigos) y ciudad
+const lugar = [pais, amigo.ciudad].filter(Boolean).join(' · ');
+// Si el amigo tiene correo, cada ítem de su oferta abre un correo para solicitarlo
+const correo = amigo.redes.find((r) => r.tipo === 'correo')?.url.replace(/^mailto:/, '');
+const solicitar = (item: string) =>
+  correo ? `mailto:${correo}?subject=${encodeURIComponent(`${item} · vía GeroAmigos`)}` : undefined;
+const iniciales = amigo.nombre
+  .split(' ')
+  .map((parte) => parte[0])
+  .slice(0, 2)
+  .join('');
+---
+<div class="amigo-cq">
+<article class:list={['amigo', `amigo--${tono}`]}>
+  <div class="amigo__foto">
+    {foto ? (
+      <Image src={foto} alt={`Retrato de ${amigo.nombre}`} widths={[160, 320]} sizes="160px" />
+    ) : (
+      <span class="amigo__iniciales" aria-hidden="true">{iniciales}</span>
+    )}
+  </div>
+  <div class="amigo__body">
+    {lugar && <p class="amigo__pais">{lugar}</p>}
+    <Heading class="amigo__nombre">{amigo.nombre}</Heading>
+    <p class="amigo__rol">{amigo.rol}</p>
+    <ul class="amigo__exp">
+      {amigo.experiencia.map((linea) => <li>{linea}</li>)}
+    </ul>
+    {amigo.oferta && (
+      <div class="amigo__charlas">
+        <p class="amigo__charlas-titulo">{amigo.oferta.titulo}</p>
+        <ul>
+          {amigo.oferta.items.map((item) => {
+            const titulo = amigo.oferta!.tipo === 'charlas' ? `“${item.titulo}”` : item.titulo;
+            const href = solicitar(item.titulo);
+            return (
+              <li>
+                {href ? (
+                  <a class="oferta" href={href}>
+                    <span class="charla__titulo">{titulo}</span>
+                    <span class="charla__tema">{item.detalle}</span>
+                  </a>
+                ) : (
+                  <span class="oferta">
+                    <span class="charla__titulo">{titulo}</span>
+                    <span class="charla__tema">{item.detalle}</span>
+                  </span>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    )}
+    {amigo.redes.length > 0 && (
+      <ul class="amigo__redes">
+        {amigo.redes.map((red) => (
+          <li>
+            {red.tipo === 'correo' ? (
+              <a href={red.url}>
+                <Icon name="correo" size={18} />
+                {red.label}
+              </a>
+            ) : (
+              <a href={red.url} target="_blank" rel="noopener">
+                <Icon name={red.tipo} size={18} />
+                {red.label}
+                <span class="sr-only"> (se abre en otra pestaña)</span>
+              </a>
+            )}
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</article>
+</div>
+
+<style>
+  /* La tarjeta se adapta a su propio ancho (columna angosta → foto arriba) */
+  .amigo-cq {
+    container-type: inline-size;
+  }
+  .amigo {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    padding: 1.5rem;
+    border-radius: var(--radius);
+    background: var(--card-bg, var(--algodon));
+  }
+  .amigo__foto {
+    position: relative;
+    width: 8.5rem;
+    aspect-ratio: 1;
+  }
+  .amigo__foto::before {
+    content: '';
+    position: absolute;
+    inset: auto -0.6rem -0.6rem auto;
+    width: 55%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--acento);
+  }
+  .amigo__foto :global(img),
+  .amigo__iniciales {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--papel);
+  }
+  .amigo__iniciales {
+    display: grid;
+    place-items: center;
+    background: var(--cacao);
+    color: var(--papel);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2.4rem;
+    letter-spacing: -0.04em;
+  }
+  .amigo--terracota { --acento: var(--terracota); }
+  .amigo--maiz { --acento: var(--maiz); }
+  .amigo--jade { --acento: var(--jade); }
+  .amigo__pais {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fuego);
+  }
+  .amigo__nombre {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+  .amigo__rol {
+    margin-top: 0.25rem;
+    font-weight: 600;
+    color: var(--jade);
+  }
+  .amigo__exp {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .amigo__exp li {
+    position: relative;
+    padding-left: 1.2rem;
+  }
+  .amigo__exp li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--acento);
+  }
+  .amigo__charlas {
+    margin-top: 1.1rem;
+  }
+  .amigo__charlas-titulo {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .amigo__charlas ul {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .oferta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--radius);
+    background: var(--cacao);
+    color: var(--papel);
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+  a.oferta:hover {
+    background: var(--noche);
+  }
+  .charla__titulo {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.125rem;
+    letter-spacing: -0.01em;
+  }
+  .charla__tema {
+    font-size: 0.875rem;
+    color: var(--maiz);
+  }
+  .amigo__redes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .amigo__redes a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.85rem;
+    border-radius: 999px;
+    border: 2px solid var(--cacao);
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .amigo__redes a:hover {
+    background: var(--cacao);
+    color: var(--papel);
+  }
+  @container (max-width: 560px) {
+    .amigo {
+      grid-template-columns: 1fr;
+      gap: 1.1rem;
+    }
+    .amigo__foto {
+      width: 7rem;
+    }
+  }
+</style>
