@@ -147,10 +147,124 @@ describe('una sola fuente de contenido', () => {
     for (const title of titles) assert.ok(md.includes(`**${title}:**`), title);
   });
 
-  test('todo el sitio usa el mismo correo de contacto', () => {
-    for (const file of ['index.html', 'index.md', 'llms.txt', 'agents.md', 'contact/index.md', 'privacy/index.md']) {
-      const emails = new Set(read(file).match(/[\w.+-]+@[\w-]+\.[\w.]+/g));
-      assert.deepEqual([...emails], [EMAIL], file);
+  test('el correo de contacto del sitio es único; la portada suma solo los correos de los amigos', () => {
+    const emailsOf = (file) => new Set(read(file).match(/[\w.+-]+@[\w-]+\.[\w.]+/g));
+    for (const file of ['llms.txt', 'agents.md', 'contact/index.md', 'privacy/index.md']) {
+      assert.deepEqual([...emailsOf(file)], [EMAIL], file);
     }
+    const paises = readFileSync(new URL('../src/data/paises.ts', import.meta.url), 'utf8');
+    const deAmigos = [...paises.matchAll(/mailto:([\w.+-]+@[\w-]+\.[\w.]+)/g)].map((m) => m[1]);
+    for (const file of ['index.html', 'index.md']) {
+      assert.deepEqual([...emailsOf(file)].sort(), [EMAIL, ...deAmigos].sort(), file);
+    }
+  });
+});
+
+describe('portada: mapa y recorrido por la red', () => {
+  const html = read('index.html');
+  const PAISES = ['mexico', 'costa-rica', 'colombia', 'venezuela', 'peru', 'chile'];
+  const NOMBRES = ['México', 'Costa Rica', 'Colombia', 'Venezuela', 'Perú', 'Chile'];
+  // HTML de la sección de un país: hasta donde empieza el siguiente (las tarjetas de amigos
+  // también son <article>, así que no sirve cortar en el primer </article>)
+  const seccion = (slug) => {
+    const start = html.indexOf(`id="pais-${slug}"`);
+    const next = html.indexOf('data-pais-section=', html.indexOf('data-pais-section=', start) + 1);
+    return html.slice(start, next > 0 ? next : html.indexOf('id="proposito"'));
+  };
+
+  test('el mapa del hero enlaza los 6 países de la red, de norte a sur', () => {
+    const hero = html.slice(html.indexOf('data-mapa="hero"'), html.indexOf('data-mapa="mini"'));
+    const links = [...hero.matchAll(/<a href="#pais-([a-z-]+)" class="mapa__pais"[^>]*aria-label="([^"]+)"/g)];
+    assert.deepEqual(links.map((m) => m[1]), PAISES);
+    links.forEach((m, i) => assert.ok(m[2].startsWith(NOMBRES[i]), m[2]));
+    const pills = [...hero.matchAll(/class="mapa__pill"[^>]*data-pais="([a-z-]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(pills, PAISES);
+  });
+
+  test('los países de contexto se dibujan una sola vez y el mini mapa los reutiliza', () => {
+    assert.equal(html.match(/id="latam-base"/g).length, 1);
+    assert.equal(html.match(/<use href="#latam-base"/g).length, 2);
+  });
+
+  test('cada país tiene su sección con hito, encuadre del mapa y 3 fotos', () => {
+    for (const slug of PAISES) {
+      assert.ok(html.includes(`id="pais-${slug}"`), slug);
+      const section = seccion(slug);
+      assert.match(section, /role="img" aria-label="Ilustración de [^"]+"/);
+      const focus = section.match(/data-focus="translate\((-?[\d.]+)px, (-?[\d.]+)px\) scale\(([\d.]+)\)"/);
+      assert.ok(focus, `${slug}: data-focus`);
+      const scale = Number(focus[3]);
+      assert.ok(scale >= 1.15 && scale <= 2.6, `${slug}: escala ${scale}`);
+      assert.equal(section.match(/class="galeria__item"/g).length, 3, slug);
+    }
+  });
+
+  test('la lista del recorrido sigue el mismo orden', () => {
+    const rail = [...html.matchAll(/data-rail="([a-z-]+)"/g)].map((m) => m[1]);
+    assert.deepEqual(rail, PAISES);
+  });
+
+  test('Chile presenta a Thomas Contreras; los demás países invitan a sumarse', () => {
+    const chile = seccion('chile');
+    assert.match(chile, /Thomas Contreras Gavilán/);
+    assert.match(chile, /CEO &amp; Founder de MACA/);
+    assert.match(chile, /<img[^>]+alt="Retrato de Thomas Contreras Gavilán"/);
+    assert.match(chile, /Charlas online disponibles/);
+    assert.match(chile, /“Cuando el mundo tenga canas”/);
+    assert.match(chile, /“Desafíos para residencias”/);
+    assert.match(chile, /href="https:\/\/www\.instagram\.com\/maca\.inn\/"/);
+    const costaRica = seccion('costa-rica');
+    assert.match(costaRica, /Pronto presentaremos a los amigos de Costa Rica/);
+  });
+
+  test('México presenta a Lilian y Colombia a Catalina y Natalia, con foto, ciudad y oferta', () => {
+    const casos = [
+      ['mexico', 'Lilian Pedroza Espinosa de los Monteros', 'Estado de México', 'Servicios en Altern Gerontológica', '@altern_gerontologica'],
+      ['colombia', 'Laura Catalina Restrepo Barrientos', 'Bello, Antioquia', 'Servicios de Geronto Senior', 'gerontosenior2025@gmail.com'],
+      ['colombia', 'Natalia Hurtado Alzate', 'Medellín', 'Charlas, talleres y acompañamientos', '@gerontologianathural'],
+    ];
+    for (const [slug, nombre, ciudad, oferta, red] of casos) {
+      const html = seccion(slug);
+      assert.ok(html.includes(nombre), nombre);
+      assert.match(html, new RegExp(`<img[^>]+alt="Retrato de ${nombre}"`), `${nombre}: foto`);
+      assert.ok(html.includes(`>${ciudad}</p>`), `${nombre}: ciudad`);
+      assert.ok(html.includes(oferta), `${nombre}: oferta`);
+      assert.ok(html.includes(red), `${nombre}: red`);
+    }
+  });
+
+  test('la oferta abre un correo al amigo si tiene correo; si no, se muestra sin enlace', () => {
+    const chile = seccion('chile');
+    assert.match(chile, /href="mailto:thomas@macainn\.cl\?subject=Cuando%20el%20mundo%20tenga%20canas%20%C2%B7%20v%C3%ADa%20GeroAmigos"/);
+    const mexico = seccion('mexico');
+    assert.ok(!/<a class="oferta"/.test(mexico), 'Lilian no tiene correo publicado');
+    assert.match(mexico, /<span class="oferta"/);
+  });
+
+  test('la invitación a sumarse lista solo los países sin amigos todavía', () => {
+    const amigos = html.slice(html.indexOf('id="amigos"'), html.indexOf('id="contacto"'));
+    assert.match(amigos, /Próximamente: Costa Rica · Venezuela · Perú/);
+  });
+
+  test('servicios figuran como próximamente y los amigos unen a los 6 países', () => {
+    assert.match(html, /class="servicios__badge"[^>]*>Próximamente</);
+    const amigos = html.slice(html.indexOf('id="amigos"'), html.indexOf('id="contacto"'));
+    assert.equal(amigos.match(/class="anillo__circulo"/g).length, 6);
+    for (const nombre of NOMBRES) assert.ok(amigos.includes(`>${nombre}</a>`), nombre);
+  });
+
+  test('index.md, llms.txt y el JSON-LD nombran los 6 países', () => {
+    const md = read('index.md');
+    NOMBRES.forEach((n, i) => assert.ok(md.includes(`### ${i + 1}. ${n}`), n));
+    assert.match(md, /\*\*Thomas Contreras Gavilán\*\*/);
+    assert.match(md, /Charlas online disponibles: «Cuando el mundo tenga canas»/);
+    assert.match(md, /\*\*Lilian Pedroza Espinosa de los Monteros\*\* \(Estado de México\)/);
+    assert.match(md, /\*\*Laura Catalina Restrepo Barrientos\*\* \(Bello, Antioquia\)/);
+    assert.match(md, /Servicios de Geronto Senior: Acompañamiento gerontológico integral/);
+    assert.match(md, /\*\*Natalia Hurtado Alzate\*\* \(Medellín\)/);
+    for (const n of NOMBRES) assert.ok(read('llms.txt').includes(n), n);
+    const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+    const org = data['@graph'].find((x) => x['@type'] === 'Organization');
+    assert.deepEqual(org.areaServed.filter((a) => a['@type'] === 'Country').map((a) => a.name), NOMBRES);
   });
 });

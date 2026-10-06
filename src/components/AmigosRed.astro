@@ -1,0 +1,242 @@
+---
+// "Los amigos": aquí se unen todos los países. Los círculos de cada país llegan desde
+// afuera y se entrelazan (cruces por multiplicación de color, como en el isotipo).
+import AmigoCard from './AmigoCard.astro';
+import Icon from './Icon.astro';
+import { mailto } from '../config';
+import { AMIGOS } from '../data/home';
+import { PAISES, TONO_HEX } from '../data/paises';
+
+const R = 112; // radio de cada círculo
+const D = 96; // distancia al centro (menor que R: el centro es el cruce de todos)
+const anillo = PAISES.map((p, i) => {
+  const a = ((-90 + (360 / PAISES.length) * i) * Math.PI) / 180;
+  return {
+    ...p,
+    hex: TONO_HEX[p.tono],
+    cx: 300 + D * Math.cos(a),
+    cy: 300 + D * Math.sin(a),
+    lx: 300 + 268 * Math.cos(a),
+    ly: 300 + 268 * Math.sin(a),
+    // Punto de partida: más afuera, para que "lleguen" al entrar en pantalla
+    ox: Math.cos(a) * 90,
+    oy: Math.sin(a) * 90,
+  };
+});
+const amigos = PAISES.flatMap((p) => p.amigos.map((amigo) => ({ amigo, pais: p })));
+const pendientes = PAISES.filter((p) => p.amigos.length === 0).map((p) => p.nombre);
+---
+<section id="amigos" class="amigos section" aria-labelledby="amigos-titulo">
+  <div class="wrap">
+    <div class="amigos__top">
+      <div class="amigos__texto" data-reveal>
+        <p class="eyebrow">{AMIGOS.eyebrow}</p>
+        <h2 id="amigos-titulo" class="amigos__titulo">{AMIGOS.title}</h2>
+        <blockquote class="amigos__cita"><p>“{AMIGOS.quote}”</p></blockquote>
+        <p class="amigos__lead">{AMIGOS.lead}</p>
+      </div>
+
+      <div class="anillo" data-reveal>
+        <svg viewBox="0 0 600 600" role="img" aria-label={`Seis círculos entrelazados: ${PAISES.map((p) => p.nombre).join(', ')}`}>
+          <circle cx="300" cy="300" r="300" fill="#FBF6EE" />
+          <g style="isolation: isolate">
+            {anillo.map((p, i) => (
+              <circle
+                class="anillo__circulo"
+                cx={p.cx}
+                cy={p.cy}
+                r={R}
+                fill={p.hex}
+                style={`--ox: ${p.ox.toFixed(1)}px; --oy: ${p.oy.toFixed(1)}px; --i: ${i}`}
+              />
+            ))}
+          </g>
+          <text x="300" y="292" class="anillo__centro">{PAISES.length} países</text>
+          <text x="300" y="322" class="anillo__centro anillo__centro--sub">una red</text>
+        </svg>
+        <ul class="anillo__nombres">
+          {anillo.map((p) => (
+            <li style={`left: ${((p.lx / 600) * 100).toFixed(2)}%; top: ${((p.ly / 600) * 100).toFixed(2)}%`}>
+              <a href={`#pais-${p.slug}`} style={`--tono: ${p.hex}`}>{p.nombre}</a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="amigos__lista">
+      {amigos.map(({ amigo, pais }) => (
+        <div data-reveal>
+          <AmigoCard amigo={amigo} tono={pais.tono} pais={pais.nombre} level={3} />
+        </div>
+      ))}
+      <div class="sumate" data-reveal>
+        <h3 class="sumate__titulo">{AMIGOS.sumate.title}</h3>
+        <p>{AMIGOS.sumate.text}</p>
+        {pendientes.length > 0 && (
+          <p class="sumate__pendientes">Próximamente: {pendientes.join(' · ')}</p>
+        )}
+        <a class="btn btn--primary" href={mailto('Quiero sumarme a GeroAmigos')}>
+          <Icon name="correo" size={20} /> {AMIGOS.sumate.cta}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .amigos {
+    background: var(--cacao);
+    color: var(--papel);
+  }
+  .amigos .eyebrow {
+    color: var(--maiz);
+  }
+  .amigos__top {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .amigos__titulo {
+    font-size: clamp(2.8rem, 7vw, 5.6rem);
+    letter-spacing: -0.045em;
+    max-width: 9ch;
+  }
+  .amigos__cita {
+    margin: 1.5rem 0 0;
+    max-width: 30ch;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    line-height: 1.4;
+    color: var(--algodon);
+  }
+  .amigos__lead {
+    margin-top: 1.25rem;
+    max-width: 44ch;
+    color: #c9b9a3;
+  }
+
+  .anillo {
+    position: relative;
+    width: min(100%, 30rem);
+    justify-self: center;
+    padding: 2.5rem;
+  }
+  .anillo svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .anillo__circulo {
+    mix-blend-mode: multiply;
+    transition: transform 1.2s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.8s ease;
+    transition-delay: calc(var(--i) * 110ms);
+  }
+  /* Solo con JavaScript (clase .js en <html>): los círculos esperan afuera hasta entrar en pantalla */
+  :global(.js) .anillo:not(:global(.is-visible)) .anillo__circulo {
+    transform: translate(var(--ox), var(--oy));
+    opacity: 0;
+  }
+  .anillo__centro {
+    fill: var(--papel);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 30px;
+    letter-spacing: -0.03em;
+    text-anchor: middle;
+  }
+  .anillo__centro--sub {
+    font-weight: 600;
+    font-size: 22px;
+  }
+  .anillo__nombres {
+    position: absolute;
+    inset: 2.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .anillo__nombres li {
+    position: absolute;
+    transform: translate(-50%, -50%);
+  }
+  .anillo__nombres a {
+    display: inline-block;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    background: var(--tono);
+    color: var(--cacao);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: transform 0.2s;
+  }
+  .anillo__nombres a:hover {
+    transform: scale(1.08);
+  }
+
+  .amigos__lista {
+    --card-bg: var(--papel);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+    color: var(--ink);
+  }
+  .sumate {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1.75rem;
+    border-radius: var(--radius);
+    border: 2px dashed rgba(243, 232, 214, 0.35);
+    color: var(--papel);
+  }
+  .sumate__titulo {
+    font-size: 1.9rem;
+    letter-spacing: -0.03em;
+  }
+  .sumate p {
+    color: #c9b9a3;
+  }
+  .sumate__pendientes {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .sumate .btn {
+    margin-top: auto;
+  }
+
+  @media (max-width: 900px) {
+    .amigos__top,
+    .amigos__lista {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 520px) {
+    .anillo {
+      padding: 1.75rem;
+    }
+    .anillo__nombres {
+      inset: 1.75rem;
+    }
+    .anillo__nombres a {
+      font-size: 0.8rem;
+      padding: 0.2rem 0.55rem;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .anillo__circulo {
+      transform: none;
+      opacity: 1;
+      transition: none;
+    }
+  }
+</style>

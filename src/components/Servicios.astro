@@ -1,18 +1,26 @@
 ---
 import Icon from './Icon.astro';
+import { mailto } from '../config';
 import { SERVICIOS as servicios, SERVICIOS_INTRO } from '../data/home';
 ---
 <section id="servicios" class="servicios section" aria-labelledby="servicios-title">
   <div class="wrap">
-    <div class="servicios__head">
-      <p class="eyebrow">{SERVICIOS_INTRO.eyebrow}</p>
+    <div class="servicios__head" data-reveal>
+      <p class="eyebrow">
+        {SERVICIOS_INTRO.eyebrow}
+        <span class="servicios__badge">{SERVICIOS_INTRO.badge}</span>
+      </p>
       <h2 id="servicios-title" class="h2">{SERVICIOS_INTRO.title}</h2>
       <p class="lead">{SERVICIOS_INTRO.lead}</p>
+      <a class="btn btn--ghost servicios__cta" href={mailto('Avísame cuando estén listos los servicios de GeroAmigos')}>
+        <Icon name="correo" size={20} /> {SERVICIOS_INTRO.cta}
+      </a>
     </div>
 
     <ul class="servicios__grid">
-      {servicios.map((s) => (
-        <li class="servicio">
+      {servicios.map((s, i) => (
+        <li class="servicio" data-reveal style={`--d: ${i % 4}`}>
+          <span class="servicio__pronto">Pronto</span>
           <span class:list={['servicio__icon', `servicio__icon--${s.tone}`]}>
             <Icon name={s.icon} size={34} />
           </span>
@@ -27,6 +35,46 @@ import { SERVICIOS as servicios, SERVICIOS_INTRO } from '../data/home';
 <style>
   .servicios__head {
     max-width: 44rem;
+  }
+  .servicios__head .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .servicios__badge {
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--maiz);
+    color: var(--cacao);
+    letter-spacing: 0.08em;
+  }
+  .servicios__cta {
+    margin-top: 1.75rem;
+  }
+  .servicio {
+    position: relative;
+  }
+  .servicio__pronto {
+    position: absolute;
+    top: 0.25rem;
+    left: 4.25rem;
+    padding: 0.1rem 0.55rem;
+    border-radius: 999px;
+    border: 1.5px dashed var(--line);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    background: var(--papel);
+  }
+  @media (max-width: 520px) {
+    .servicio__pronto {
+      top: -0.5rem;
+      left: 2.4rem;
+      z-index: 1;
+    }
   }
   .servicios__head .lead {
     margin-top: 1.25rem;

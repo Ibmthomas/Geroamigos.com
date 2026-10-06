@@ -16,9 +16,10 @@ export const SITE = {
 
 // Anclas absolutas: funcionan tanto en la portada como en las páginas internas.
 export const NAV = [
+  { label: 'La red', href: '/#paises' },
+  { label: 'Propósito', href: '/#proposito' },
   { label: 'Servicios', href: '/#servicios' },
-  { label: 'Nosotros', href: '/#nosotros' },
-  { label: 'Recursos', href: '/#recursos' },
+  { label: 'Amigos', href: '/#amigos' },
   { label: 'Contacto', href: '/#contacto' },
 ];
 

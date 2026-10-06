@@ -1,16 +1,19 @@
 ---
-import { VALORES as valores, VALORES_INTRO } from '../data/home';
+import { PROPOSITO, VALORES } from '../data/home';
 ---
-<section class="valores section" aria-labelledby="valores-title">
+<section id="proposito" class="proposito section" aria-labelledby="proposito-titulo">
   <div class="wrap">
-    <div class="valores__head">
-      <h2 id="valores-title" class="h2">{VALORES_INTRO.title}</h2>
-      <p class="lead">{VALORES_INTRO.lead}</p>
+    <div class="proposito__head">
+      <div data-reveal>
+        <p class="eyebrow">{PROPOSITO.eyebrow}</p>
+        <h2 id="proposito-titulo" class="h2">{PROPOSITO.title}</h2>
+      </div>
+      <p class="lead" data-reveal style="--d: 1">{PROPOSITO.lead}</p>
     </div>
 
-    <ul class="valores__grid">
-      {valores.map((v) => (
-        <li class:list={['valor', `valor--${v.tone}`]}>
+    <ul class="proposito__grid">
+      {VALORES.map((v, i) => (
+        <li class:list={['valor', `valor--${v.tone}`]} data-reveal style={`--d: ${i}`}>
           <span class="valor__n">{v.n}</span>
           <h3 class="valor__title">{v.titulo}</h3>
           <p class="valor__text">{v.texto}</p>
@@ -21,16 +24,16 @@ import { VALORES as valores, VALORES_INTRO } from '../data/home';
 </section>
 
 <style>
-  .valores {
+  .proposito {
     background: var(--algodon);
   }
-  .valores__head {
+  .proposito__head {
     display: grid;
     grid-template-columns: 1.15fr 1fr;
     gap: 2rem 4rem;
     align-items: end;
   }
-  .valores__grid {
+  .proposito__grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.25rem;
@@ -68,12 +71,12 @@ import { VALORES as valores, VALORES_INTRO } from '../data/home';
   .valor--cacao .valor__n { color: var(--maiz); }
 
   @media (max-width: 960px) {
-    .valores__head { grid-template-columns: 1fr; }
-    .valores__grid { grid-template-columns: repeat(2, 1fr); }
+    .proposito__head { grid-template-columns: 1fr; }
+    .proposito__grid { grid-template-columns: repeat(2, 1fr); }
     .valor { min-height: 15rem; }
   }
   @media (max-width: 560px) {
-    .valores__grid { grid-template-columns: 1fr; }
+    .proposito__grid { grid-template-columns: 1fr; }
     .valor { min-height: 0; }
     .valor__title { margin-top: 1.75rem; }
   }

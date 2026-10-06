@@ -1,0 +1,190 @@
+---
+// Ilustración del lugar emblemático de cada país, con la paleta y los círculos de la marca.
+interface Props {
+  slug: string;
+  title: string;
+  class?: string;
+}
+const { slug, title, class: className } = Astro.props;
+
+const C = { t: '#D2532C', m: '#E8A922', j: '#1F7A73', c: '#2A1D14', p: '#FBF6EE', a: '#F3E8D6', f: '#BF3706', mo: '#1C510F', n: '#1A2814', js: '#C4DBD2', ms: '#F6DCA4' };
+
+// Pirámide de Kukulkán: 5 cuerpos escalonados
+const tiers = Array.from({ length: 5 }, (_, i) => {
+  const yb = 330 - 36 * i;
+  const yt = yb - 36;
+  const x0 = 190 + 32 * i;
+  const x1 = 610 - 32 * i;
+  return `${x0},${yb} ${x1},${yb} ${x1 - 12},${yt} ${x0 + 12},${yt}`;
+});
+
+// Palmas de cera: tronco curvo y copa
+const palms = [
+  [250, 330, 246, 256, 110],
+  [330, 322, 336, 326, 150],
+  [470, 304, 462, 474, 86],
+  [560, 322, 566, 556, 140],
+  [684, 300, 680, 688, 176],
+];
+const crown = (x: number, y: number) =>
+  `M${x} ${y} l-30 14 M${x} ${y} l30 14 M${x} ${y} l-24 -10 M${x} ${y} l24 -10 M${x} ${y} l-8 -26 M${x} ${y} l8 -26`;
+
+// Torres del Paine: torre con cumbre redondeada y nieve
+const tower = (x: number, w: number, top: number) =>
+  `M${x} 204 L${x + 6} ${top + 22} Q${x + w / 2} ${top - 10} ${x + w - 6} ${top + 22} L${x + w} 204 Z`;
+const snow = (x: number, w: number, top: number) =>
+  `M${x + 8} ${top + 18} Q${x + w / 2} ${top - 8} ${x + w - 8} ${top + 18} L${x + w / 2 + 4} ${top + 12} L${x + w / 2} ${top + 22} L${x + w / 2 - 6} ${top + 12} Z`;
+---
+<svg
+  class={className}
+  viewBox="0 0 800 400"
+  preserveAspectRatio="xMidYMid slice"
+  role="img"
+  aria-label={title}
+>
+  {slug === 'mexico' && (
+    <g>
+      <rect width="800" height="400" fill={C.ms} />
+      <circle cx="610" cy="118" r="88" fill={C.t} />
+      <g fill={C.j}>
+        <circle cx="40" cy="318" r="46" /><circle cx="118" cy="314" r="38" />
+        <circle cx="694" cy="314" r="42" /><circle cx="772" cy="320" r="48" />
+      </g>
+      <g fill={C.mo}><circle cx="78" cy="332" r="34" /><circle cx="734" cy="334" r="36" /></g>
+      <rect y="330" width="800" height="70" fill={C.j} />
+      {tiers.map((points) => <polygon points={points} fill={C.c} />)}
+      <g stroke={C.a} stroke-width="2">
+        {tiers.map((_, i) => <line x1={202 + 32 * i} x2={598 - 32 * i} y1={294 - 36 * i} y2={294 - 36 * i} />)}
+      </g>
+      <polygon points="366,330 434,330 422,150 378,150" fill={C.f} />
+      <g stroke={C.c} stroke-width="2" opacity="0.35">
+        {Array.from({ length: 14 }, (_, i) => <line x1="360" x2="440" y1={162 + 12 * i} y2={162 + 12 * i} />)}
+      </g>
+      <rect x="344" y="98" width="112" height="10" fill={C.c} />
+      <rect x="350" y="106" width="100" height="44" fill={C.c} />
+      <rect x="387" y="118" width="26" height="32" fill={C.a} />
+    </g>
+  )}
+
+  {slug === 'costa-rica' && (
+    <g>
+      <rect width="800" height="400" fill={C.js} />
+      <circle cx="170" cy="105" r="70" fill={C.m} />
+      <polygon points="150,340 392,96 432,96 680,340" fill={C.mo} />
+      <polygon points="392,96 432,96 487,150 338,150" fill={C.c} />
+      <g fill={C.p}>
+        <circle cx="412" cy="72" r="24" /><circle cx="446" cy="60" r="20" />
+        <circle cx="476" cy="48" r="15" /><circle cx="388" cy="64" r="14" />
+      </g>
+      <g fill={C.p}>
+        <circle cx="252" cy="232" r="20" /><circle cx="282" cy="222" r="28" /><circle cx="318" cy="232" r="20" />
+        <rect x="252" y="232" width="66" height="20" />
+        <circle cx="540" cy="250" r="16" /><circle cx="566" cy="242" r="22" /><circle cx="594" cy="250" r="16" />
+        <rect x="540" y="250" width="54" height="16" />
+      </g>
+      <g fill={C.j}>
+        <circle cx="28" cy="332" r="60" /><circle cx="132" cy="346" r="56" />
+        <circle cx="560" cy="350" r="60" /><circle cx="680" cy="336" r="58" /><circle cx="790" cy="346" r="56" />
+      </g>
+      <g fill={C.mo}><circle cx="80" cy="362" r="46" /><circle cx="622" cy="372" r="50" /><circle cx="742" cy="374" r="46" /></g>
+      <rect y="362" width="800" height="38" fill={C.j} />
+    </g>
+  )}
+
+  {slug === 'colombia' && (
+    <g>
+      <rect width="800" height="400" fill={C.a} />
+      <circle cx="620" cy="100" r="78" fill={C.m} />
+      <ellipse cx="160" cy="300" rx="260" ry="150" fill={C.js} />
+      <ellipse cx="570" cy="312" rx="320" ry="140" fill={C.js} />
+      <circle cx="190" cy="560" r="290" fill={C.j} />
+      <circle cx="650" cy="600" r="330" fill={C.mo} />
+      <g stroke={C.c} stroke-width="6" stroke-linecap="round" fill="none">
+        {palms.map(([x0, y0, qx, x1, y1]) => <path d={`M${x0} ${y0} Q${qx} ${(y0 + y1) / 2} ${x1} ${y1}`} />)}
+      </g>
+      <g stroke={C.mo} stroke-width="7" stroke-linecap="round" fill="none">
+        {palms.map(([, , , x1, y1]) => <path d={crown(x1, y1)} />)}
+      </g>
+    </g>
+  )}
+
+  {slug === 'venezuela' && (
+    <g>
+      <rect width="800" height="400" fill={C.js} />
+      <circle cx="140" cy="95" r="62" fill={C.m} />
+      <polygon points="40,340 62,226 196,220 222,340" fill={C.t} />
+      <polygon points="262,340 292,128 724,114 762,340" fill={C.f} />
+      <g stroke={C.t} stroke-width="3">
+        <line x1="330" y1="150" x2="318" y2="330" /><line x1="392" y1="146" x2="388" y2="330" />
+        <line x1="530" y1="140" x2="536" y2="330" /><line x1="604" y1="136" x2="614" y2="330" />
+        <line x1="672" y1="132" x2="690" y2="330" />
+      </g>
+      <polygon points="288,128 728,112 727,132 290,150" fill={C.mo} />
+      <rect x="452" y="130" width="11" height="196" fill={C.p} />
+      <rect x="469" y="162" width="4" height="150" fill={C.p} />
+      <g fill={C.p}><circle cx="452" cy="330" r="22" /><circle cx="480" cy="336" r="18" /><circle cx="428" cy="338" r="16" /></g>
+      <g fill={C.j}>
+        <circle cx="40" cy="346" r="48" /><circle cx="170" cy="352" r="44" /><circle cx="330" cy="352" r="40" />
+        <circle cx="600" cy="352" r="44" /><circle cx="740" cy="346" r="50" />
+      </g>
+      <g fill={C.mo}><circle cx="100" cy="366" r="36" /><circle cx="660" cy="370" r="38" /></g>
+      <rect y="360" width="800" height="40" fill={C.j} />
+    </g>
+  )}
+
+  {slug === 'peru' && (
+    <g>
+      <rect width="800" height="400" fill={C.a} />
+      <circle cx="150" cy="96" r="64" fill={C.t} />
+      <path d="M0 340 C70 230 170 160 260 175 C340 190 390 270 440 340 Z" fill={C.mo} />
+      <path d="M430 340 C450 210 490 82 548 70 C606 82 640 210 700 340 Z" fill={C.j} />
+      <g fill={C.p}>
+        <circle cx="610" cy="176" r="18" /><circle cx="636" cy="168" r="24" /><circle cx="666" cy="178" r="16" />
+        <rect x="610" y="176" width="56" height="18" />
+      </g>
+      <polygon points="120,340 186,286 610,286 664,340" fill={C.j} />
+      <g fill={C.m}>
+        <rect x="132" y="304" width="150" height="6" /><rect x="110" y="318" width="172" height="6" />
+        <rect x="88" y="332" width="194" height="6" />
+      </g>
+      <g fill={C.c}>
+        <rect x="300" y="262" width="40" height="26" /><rect x="352" y="256" width="30" height="32" />
+        <rect x="396" y="266" width="48" height="22" /><rect x="458" y="258" width="34" height="30" />
+        <rect x="506" y="266" width="40" height="22" />
+      </g>
+      <g fill={C.f}>
+        <polygon points="296,262 320,244 344,262" /><polygon points="348,256 367,240 386,256" />
+        <polygon points="454,258 475,242 496,258" />
+      </g>
+      <rect y="340" width="800" height="60" fill={C.mo} />
+    </g>
+  )}
+
+  {slug === 'chile' && (
+    <g>
+      <rect width="800" height="400" fill={C.js} />
+      <circle cx="150" cy="100" r="66" fill={C.m} />
+      <polygon points="186,312 236,252 270,226 300,206 336,214 372,196 420,204 470,194 516,210 548,200 590,232 624,270 664,312" fill={C.c} />
+      <g fill={C.n}>
+        <path d={tower(318, 46, 70)} /><path d={tower(384, 52, 46)} /><path d={tower(456, 42, 84)} />
+      </g>
+      <g fill={C.p}>
+        <path d={snow(318, 46, 70)} /><path d={snow(384, 52, 46)} /><path d={snow(456, 42, 84)} />
+        <polygon points="262,236 270,226 284,232 276,246" /><polygon points="540,206 548,200 566,214 552,222" />
+        <polygon points="590,232 600,244 584,246" />
+      </g>
+      <rect y="304" width="800" height="46" fill={C.j} />
+      <g stroke={C.p} stroke-width="3" stroke-linecap="round">
+        <line x1="300" y1="318" x2="360" y2="318" /><line x1="420" y1="326" x2="500" y2="326" />
+        <line x1="560" y1="316" x2="600" y2="316" />
+      </g>
+      <g fill={C.mo}>
+        <circle cx="40" cy="356" r="44" /><circle cx="150" cy="366" r="40" />
+        <circle cx="660" cy="362" r="44" /><circle cx="770" cy="354" r="46" />
+      </g>
+      <g fill={C.t}><circle cx="96" cy="346" r="20" /><circle cx="712" cy="344" r="22" /></g>
+      <g fill={C.m}><circle cx="200" cy="356" r="16" /><circle cx="610" cy="352" r="16" /></g>
+      <rect y="368" width="800" height="32" fill={C.mo} />
+    </g>
+  )}
+</svg>

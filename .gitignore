@@ -9,3 +9,4 @@ dist/
 
 # Archivos de marca pesados: no van al repo público
 /*.pdf
+/*.xlsx

@@ -1,0 +1,266 @@
+---
+import { Image } from 'astro:assets';
+import AmigoCard from './AmigoCard.astro';
+import Hito from './Hito.astro';
+import Icon from './Icon.astro';
+import { mailto } from '../config';
+import { PAISES, type Pais } from '../data/paises';
+import { fotosDePais } from '../lib/fotos';
+
+interface Props {
+  pais: Pais;
+  index: number;
+  /** Transformación del mini mapa para centrar este país (la aplica el script del recorrido) */
+  focus: string;
+}
+const { pais, index, focus } = Astro.props;
+const num = (n: number) => String(n).padStart(2, '0');
+const fotos = fotosDePais(pais.slug);
+const slots = [0, 1, 2].map((i) => fotos[i]);
+---
+<article
+  id={`pais-${pais.slug}`}
+  class:list={['pais', `pais--${pais.tono}`]}
+  data-pais-section={pais.slug}
+  data-focus={focus}
+  aria-labelledby={`pais-${pais.slug}-titulo`}
+>
+  <div class="pais__banner" data-reveal>
+    <Hito slug={pais.slug} title={`Ilustración de ${pais.hito.nombre}, ${pais.nombre}`} class="pais__hito" />
+    <div class="pais__label">
+      <span class="pais__num">{num(index + 1)} / {num(PAISES.length)}</span>
+      <h3 id={`pais-${pais.slug}-titulo`} class="pais__nombre">{pais.nombre}</h3>
+      <p class="pais__lugar">{pais.hito.nombre} · {pais.hito.lugar}</p>
+    </div>
+  </div>
+
+  <p class="pais__frase" data-reveal>{pais.frase}</p>
+
+  <div class="pais__amigos">
+    <p class="pais__sub" data-reveal>Amigos en {pais.nombre}</p>
+    {pais.amigos.length > 0 ? (
+      pais.amigos.map((amigo) => (
+        <div data-reveal>
+          <AmigoCard amigo={amigo} tono={pais.tono} />
+        </div>
+      ))
+    ) : (
+      <div class="pais__pendiente" data-reveal>
+        <span class="pais__pendiente-avatar" aria-hidden="true">?</span>
+        <div>
+          <p class="pais__pendiente-titulo">Pronto presentaremos a los amigos de {pais.nombre}.</p>
+          <a href={mailto(`Quiero sumarme a GeroAmigos desde ${pais.nombre}`)}>
+            ¿Trabajas en gerontología en {pais.nombre}? Súmate a la red
+          </a>
+        </div>
+      </div>
+    )}
+  </div>
+
+  <ul class="galeria" aria-label={`Fotos de ${pais.nombre}`}>
+    {slots.map((foto, i) => (
+      <li class="galeria__item" data-reveal style={`--d: ${i}`}>
+        {foto ? (
+          <Image src={foto} alt={`${pais.nombre}: foto ${i + 1}`} widths={[360, 720]} sizes="(max-width: 700px) 100vw, 240px" />
+        ) : (
+          <div class="galeria__vacia">
+            <Icon name="camara" size={28} />
+            <span>Foto {i + 1} · próximamente</span>
+          </div>
+        )}
+      </li>
+    ))}
+  </ul>
+</article>
+
+<style>
+  .pais {
+    --acento: var(--terracota);
+    --acento-suave: #f4cdbf;
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+    scroll-margin-top: 6rem;
+  }
+  .pais + :global(.pais) {
+    border-top: 1px solid var(--line);
+  }
+  .pais--maiz {
+    --acento: var(--maiz);
+    --acento-suave: var(--maiz-suave);
+  }
+  .pais--jade {
+    --acento: var(--jade);
+    --acento-suave: var(--jade-suave);
+  }
+
+  .pais__banner {
+    position: relative;
+    border-radius: calc(var(--radius) * 1.6);
+    overflow: hidden;
+    aspect-ratio: 16 / 8;
+    background: var(--acento-suave);
+  }
+  .pais__banner :global(.pais__hito) {
+    width: 100%;
+    height: 100%;
+    transform: scale(1.06);
+    transition: transform 1.4s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .pais__banner:global(.is-visible) :global(.pais__hito) {
+    transform: scale(1);
+  }
+  .pais__label {
+    position: absolute;
+    left: clamp(0.75rem, 2.5vw, 1.5rem);
+    bottom: clamp(0.75rem, 2.5vw, 1.5rem);
+    padding: 0.9rem 1.3rem 1rem;
+    border-radius: var(--radius);
+    background: var(--papel);
+    box-shadow: 0 8px 24px rgba(42, 29, 20, 0.18);
+  }
+  .pais__num {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--fuego);
+  }
+  .pais__nombre {
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    letter-spacing: -0.045em;
+  }
+  .pais__lugar {
+    margin-top: 0.2rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  .pais__frase {
+    margin-top: 1.75rem;
+    max-width: 40ch;
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .pais__amigos {
+    display: grid;
+    gap: 1rem;
+    margin-top: 2rem;
+  }
+  .pais__sub {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .pais__pendiente {
+    display: flex;
+    gap: 1.25rem;
+    align-items: center;
+    padding: 1.25rem 1.5rem;
+    border: 2px dashed var(--line);
+    border-radius: var(--radius);
+  }
+  .pais__pendiente-avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background: var(--acento-suave);
+    color: var(--cacao);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.6rem;
+  }
+  .pais__pendiente-titulo {
+    font-weight: 600;
+  }
+  .pais__pendiente a {
+    color: var(--jade);
+    font-weight: 600;
+    text-underline-offset: 4px;
+  }
+
+  .galeria {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.9rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .galeria__item {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .galeria__item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .galeria__vacia {
+    position: relative;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 0.5rem;
+    height: 100%;
+    overflow: hidden;
+    background: var(--algodon);
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  .galeria__vacia::before,
+  .galeria__vacia::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: var(--acento-suave);
+  }
+  .galeria__vacia::before {
+    width: 70%;
+    aspect-ratio: 1;
+    right: -25%;
+    top: -30%;
+  }
+  .galeria__vacia::after {
+    width: 40%;
+    aspect-ratio: 1;
+    left: -12%;
+    bottom: -20%;
+    background: var(--acento);
+    opacity: 0.35;
+  }
+  .galeria__vacia > :global(*) {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (max-width: 700px) {
+    .pais__banner {
+      aspect-ratio: 4 / 3;
+    }
+    .galeria {
+      grid-template-columns: 1fr 1fr;
+    }
+    .galeria__item:first-child {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pais__banner :global(.pais__hito) {
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
