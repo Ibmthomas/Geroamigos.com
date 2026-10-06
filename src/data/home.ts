@@ -98,11 +98,6 @@ export const AMIGOS = {
   title: 'Envejecer entre amigos',
   quote: 'Envejecer también se aprende. Y se aprende mejor entre amigos.',
   lead: 'Aquí se unen todos los países: profesionales de la gerontología que comparten lo que se hace en su tierra.',
-  sumate: {
-    title: 'Tu lugar en la red',
-    text: '¿Trabajas en gerontología en Latinoamérica? Súmate a GeroAmigos y lleva la voz de tu país.',
-    cta: 'Quiero sumarme',
-  },
 };
 
 export const CONTACTO = {

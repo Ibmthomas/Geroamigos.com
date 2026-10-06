@@ -80,8 +80,6 @@ export function homeMarkdown(): string {
     '',
     AMIGOS.lead,
     '',
-    `${AMIGOS.sumate.text} Escribe a [${SITE.email}](mailto:${SITE.email}).`,
-    '',
     `## ${CONTACTO.title}`,
     '',
     CONTACTO.lead,

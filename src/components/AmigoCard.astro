@@ -10,10 +10,12 @@ interface Props {
   pais?: string;
   /** Nivel del título según dónde se use la tarjeta */
   level?: 3 | 4;
+  /** false: sin foto (en "Los amigos" las fotos no se repiten; solo van en cada país) */
+  foto?: boolean;
 }
-const { amigo, tono, pais, level = 4 } = Astro.props;
+const { amigo, tono, pais, level = 4, foto: conFoto = true } = Astro.props;
 const Heading = level === 3 ? 'h3' : 'h4';
-const foto = fotoDeAmigo(amigo.id);
+const foto = conFoto ? fotoDeAmigo(amigo.id) : undefined;
 // Etiqueta superior: país (en la sección de amigos) y ciudad
 const lugar = [pais, amigo.ciudad].filter(Boolean).join(' · ');
 // Si el amigo tiene correo, cada ítem de su oferta abre un correo para solicitarlo
@@ -27,14 +29,16 @@ const iniciales = amigo.nombre
   .join('');
 ---
 <div class="amigo-cq">
-<article class:list={['amigo', `amigo--${tono}`]}>
-  <div class="amigo__foto">
-    {foto ? (
-      <Image src={foto} alt={`Retrato de ${amigo.nombre}`} widths={[160, 320]} sizes="160px" />
-    ) : (
-      <span class="amigo__iniciales" aria-hidden="true">{iniciales}</span>
-    )}
-  </div>
+<article class:list={['amigo', `amigo--${tono}`, { 'amigo--sin-foto': !conFoto }]}>
+  {conFoto && (
+    <div class="amigo__foto">
+      {foto ? (
+        <Image src={foto} alt={`Retrato de ${amigo.nombre}`} widths={[160, 320]} sizes="160px" />
+      ) : (
+        <span class="amigo__iniciales" aria-hidden="true">{iniciales}</span>
+      )}
+    </div>
+  )}
   <div class="amigo__body">
     {lugar && <p class="amigo__pais">{lugar}</p>}
     <Heading class="amigo__nombre">{amigo.nombre}</Heading>
@@ -105,6 +109,10 @@ const iniciales = amigo.nombre
     padding: 1.5rem;
     border-radius: var(--radius);
     background: var(--card-bg, var(--algodon));
+  }
+  .amigo--sin-foto {
+    grid-template-columns: 1fr;
+    border-top: 6px solid var(--acento);
   }
   .amigo__foto {
     position: relative;
