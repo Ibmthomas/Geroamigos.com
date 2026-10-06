@@ -241,9 +241,16 @@ describe('portada: mapa y recorrido por la red', () => {
     assert.match(mexico, /<span class="oferta"/);
   });
 
-  test('la invitación a sumarse lista solo los países sin amigos todavía', () => {
+  test('en "Los amigos" están los 4 amigos sin fotos (no se repiten) y sin invitación a sumarse', () => {
     const amigos = html.slice(html.indexOf('id="amigos"'), html.indexOf('id="contacto"'));
-    assert.match(amigos, /Próximamente: Costa Rica · Venezuela · Perú/);
+    assert.equal(amigos.match(/class="amigo amigo--[a-z]+ amigo--sin-foto"/g).length, 4);
+    assert.ok(!/<img/.test(amigos), 'sin fotos');
+    assert.ok(!/class="amigo__iniciales"/.test(amigos), 'sin iniciales');
+    assert.ok(!/Tu lugar en la red|Quiero sumarme/.test(amigos), 'sin invitación');
+    // Cada foto aparece una sola vez en la página: en la sección de su país
+    for (const nombre of ['Lilian Pedroza Espinosa de los Monteros', 'Laura Catalina Restrepo Barrientos', 'Natalia Hurtado Alzate', 'Thomas Contreras Gavilán']) {
+      assert.equal(html.split(`alt="Retrato de ${nombre}"`).length - 1, 1, nombre);
+    }
   });
 
   test('servicios figuran como próximamente y los amigos unen a los 6 países', () => {

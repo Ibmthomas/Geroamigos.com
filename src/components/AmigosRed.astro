@@ -2,8 +2,6 @@
 // "Los amigos": aquí se unen todos los países. Los círculos de cada país llegan desde
 // afuera y se entrelazan (cruces por multiplicación de color, como en el isotipo).
 import AmigoCard from './AmigoCard.astro';
-import Icon from './Icon.astro';
-import { mailto } from '../config';
 import { AMIGOS } from '../data/home';
 import { PAISES, TONO_HEX } from '../data/paises';
 
@@ -24,7 +22,6 @@ const anillo = PAISES.map((p, i) => {
   };
 });
 const amigos = PAISES.flatMap((p) => p.amigos.map((amigo) => ({ amigo, pais: p })));
-const pendientes = PAISES.filter((p) => p.amigos.length === 0).map((p) => p.nombre);
 ---
 <section id="amigos" class="amigos section" aria-labelledby="amigos-titulo">
   <div class="wrap">
@@ -67,19 +64,9 @@ const pendientes = PAISES.filter((p) => p.amigos.length === 0).map((p) => p.nomb
     <div class="amigos__lista">
       {amigos.map(({ amigo, pais }) => (
         <div data-reveal>
-          <AmigoCard amigo={amigo} tono={pais.tono} pais={pais.nombre} level={3} />
+          <AmigoCard amigo={amigo} tono={pais.tono} pais={pais.nombre} level={3} foto={false} />
         </div>
       ))}
-      <div class="sumate" data-reveal>
-        <h3 class="sumate__titulo">{AMIGOS.sumate.title}</h3>
-        <p>{AMIGOS.sumate.text}</p>
-        {pendientes.length > 0 && (
-          <p class="sumate__pendientes">Próximamente: {pendientes.join(' · ')}</p>
-        )}
-        <a class="btn btn--primary" href={mailto('Quiero sumarme a GeroAmigos')}>
-          <Icon name="correo" size={20} /> {AMIGOS.sumate.cta}
-        </a>
-      </div>
     </div>
   </div>
 </section>
@@ -185,33 +172,6 @@ const pendientes = PAISES.filter((p) => p.amigos.length === 0).map((p) => p.nomb
     gap: 1.25rem;
     margin-top: clamp(2.5rem, 6vw, 4rem);
     color: var(--ink);
-  }
-  .sumate {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.9rem;
-    padding: 1.75rem;
-    border-radius: var(--radius);
-    border: 2px dashed rgba(243, 232, 214, 0.35);
-    color: var(--papel);
-  }
-  .sumate__titulo {
-    font-size: 1.9rem;
-    letter-spacing: -0.03em;
-  }
-  .sumate p {
-    color: #c9b9a3;
-  }
-  .sumate__pendientes {
-    font-family: var(--font-mono);
-    font-size: 0.8125rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-  .sumate .btn {
-    margin-top: auto;
   }
 
   @media (max-width: 900px) {
