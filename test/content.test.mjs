@@ -217,9 +217,11 @@ describe('portada: mapa y recorrido por la red', () => {
     assert.match(costaRica, /Pronto presentaremos a los amigos de Costa Rica/);
   });
 
-  test('México presenta a Lilian y Colombia a Catalina y Natalia, con foto, ciudad y oferta', () => {
+  test('México presenta a Lilian y Daisy, Colombia a Catalina y Natalia y Perú a Rosaestela, con foto, ciudad y oferta', () => {
     const casos = [
       ['mexico', 'Lilian Pedroza Espinosa de los Monteros', 'Estado de México', 'Servicios en Altern Gerontológica', '@altern_gerontologica'],
+      ['mexico', 'Daisy Karina Martínez Burgos', 'Culiacán, Sinaloa', 'Servicios de Silver Society', '@silversocietymx'],
+      ['peru', 'Rosaestela Gómez Holguín', 'Lima', 'Asesorías y programas', '@nietositinerantes'],
       ['colombia', 'Laura Catalina Restrepo Barrientos', 'Bello, Antioquia', 'Servicios de Geronto Senior', 'gerontosenior2025@gmail.com'],
       ['colombia', 'Natalia Hurtado Alzate', 'Medellín', 'Charlas, talleres y acompañamientos', '@gerontologianathural'],
     ];
@@ -237,18 +239,21 @@ describe('portada: mapa y recorrido por la red', () => {
     const chile = seccion('chile');
     assert.match(chile, /href="mailto:thomas@macainn\.cl\?subject=Cuando%20el%20mundo%20tenga%20canas%20%C2%B7%20v%C3%ADa%20GeroAmigos"/);
     const mexico = seccion('mexico');
-    assert.ok(!/<a class="oferta"/.test(mexico), 'Lilian no tiene correo publicado');
-    assert.match(mexico, /<span class="oferta"/);
+    const lilian = mexico.slice(mexico.indexOf('Lilian Pedroza'), mexico.indexOf('Daisy Karina'));
+    assert.ok(!/<a class="oferta"/.test(lilian), 'Lilian no tiene correo publicado');
+    assert.match(lilian, /<span class="oferta"/);
+    assert.match(mexico, /href="mailto:silversociety2025@gmail\.com\?subject=Estimulaci%C3%B3n%20cognitiva%20%C2%B7%20v%C3%ADa%20GeroAmigos"/);
+    assert.match(seccion('peru'), /href="mailto:rosaegomezholguin@gmail\.com\?subject=/);
   });
 
-  test('en "Los amigos" están los 4 amigos sin fotos (no se repiten) y sin invitación a sumarse', () => {
+  test('en "Los amigos" están los 6 amigos sin fotos (no se repiten) y sin invitación a sumarse', () => {
     const amigos = html.slice(html.indexOf('id="amigos"'), html.indexOf('id="contacto"'));
-    assert.equal(amigos.match(/class="amigo amigo--[a-z]+ amigo--sin-foto"/g).length, 4);
+    assert.equal(amigos.match(/class="amigo amigo--[a-z]+ amigo--sin-foto"/g).length, 6);
     assert.ok(!/<img/.test(amigos), 'sin fotos');
     assert.ok(!/class="amigo__iniciales"/.test(amigos), 'sin iniciales');
     assert.ok(!/Tu lugar en la red|Quiero sumarme/.test(amigos), 'sin invitación');
     // Cada foto aparece una sola vez en la página: en la sección de su país
-    for (const nombre of ['Lilian Pedroza Espinosa de los Monteros', 'Laura Catalina Restrepo Barrientos', 'Natalia Hurtado Alzate', 'Thomas Contreras Gavilán']) {
+    for (const nombre of ['Lilian Pedroza Espinosa de los Monteros', 'Daisy Karina Martínez Burgos', 'Laura Catalina Restrepo Barrientos', 'Natalia Hurtado Alzate', 'Rosaestela Gómez Holguín', 'Thomas Contreras Gavilán']) {
       assert.equal(html.split(`alt="Retrato de ${nombre}"`).length - 1, 1, nombre);
     }
   });
@@ -269,6 +274,8 @@ describe('portada: mapa y recorrido por la red', () => {
     assert.match(md, /\*\*Laura Catalina Restrepo Barrientos\*\* \(Bello, Antioquia\)/);
     assert.match(md, /Servicios de Geronto Senior: Acompañamiento gerontológico integral/);
     assert.match(md, /\*\*Natalia Hurtado Alzate\*\* \(Medellín\)/);
+    assert.match(md, /\*\*Daisy Karina Martínez Burgos\*\* \(Culiacán, Sinaloa\)/);
+    assert.match(md, /\*\*Rosaestela Gómez Holguín\*\* \(Lima\)/);
     for (const n of NOMBRES) assert.ok(read('llms.txt').includes(n), n);
     const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
     const org = data['@graph'].find((x) => x['@type'] === 'Organization');

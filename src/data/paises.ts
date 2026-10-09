@@ -76,6 +76,31 @@ export const PAISES: Pais[] = [
           { tipo: 'instagram', url: 'https://www.instagram.com/altern_gerontologica/', label: '@altern_gerontologica' },
         ],
       },
+      {
+        id: 'daisy-martinez',
+        nombre: 'Daisy Karina Martínez Burgos',
+        ciudad: 'Culiacán, Sinaloa',
+        rol: 'Licenciada en Gericultura · Fundadora de Silver Society',
+        experiencia: [
+          'Licenciada en Gericultura y maestrante en Gerontología, con diplomados en administración gerontológica y gestión de servicios para personas mayores, bioética y gerontología.',
+          'Siete años de experiencia en intervención gerontológica, estimulación cognitiva, terapia ocupacional, activación física y acompañamiento domiciliario, integrando lo físico, cognitivo, emocional y social desde la historia de vida de cada persona.',
+          'Fundadora de Silver Society – Wellness & Health, un club social donde las personas mayores se mantienen activas, aprenden, conviven y crean nuevos vínculos: «envejecer no significa dejar de vivir».',
+        ],
+        oferta: {
+          titulo: 'Servicios de Silver Society',
+          tipo: 'servicios',
+          items: [
+            { titulo: 'Valoración gerontológica integral', detalle: 'Necesidades y capacidades' },
+            { titulo: 'Estimulación cognitiva', detalle: 'Memoria, atención y lenguaje' },
+            { titulo: 'Terapia ocupacional y activación física', detalle: 'Autonomía y movilidad' },
+            { titulo: 'Talleres y gimnasia cerebral', detalle: 'Club de lectura y bienestar psicosocial' },
+          ],
+        },
+        redes: [
+          { tipo: 'instagram', url: 'https://www.instagram.com/silversocietymx/', label: '@silversocietymx' },
+          { tipo: 'correo', url: 'mailto:silversociety2025@gmail.com', label: 'silversociety2025@gmail.com' },
+        ],
+      },
     ],
   },
   {
@@ -159,7 +184,35 @@ export const PAISES: Pais[] = [
     tono: 'jade',
     hito: { nombre: 'Machu Picchu', lugar: 'Cusco' },
     frase: 'Sabiduría andina para una vejez con raíces.',
-    amigos: [],
+    amigos: [
+      {
+        id: 'rosaestela-gomez',
+        nombre: 'Rosaestela Gómez Holguín',
+        ciudad: 'Lima',
+        rol: 'Abogada en Derecho de la Vejez y gerontóloga social · Presidenta de Nietos Itinerantes',
+        experiencia: [
+          'Abogada, magíster en Derecho de la Vejez y gerontóloga social, con más de 10 años de experiencia en derechos humanos de las personas mayores, gestión pública e innovación social.',
+          'Cofundadora y presidenta de la Asociación Civil Nietos Itinerantes, fundadora de Kaniq y presidenta de la Asociación Gerontológica del Perú.',
+          'Trabaja en voluntariado intergeneracional, alfabetización digital, salud cerebral y formación de personas cuidadoras; como consultora, docente y conferencista impulsa una longevidad digna, autónoma y libre de edadismo.',
+        ],
+        oferta: {
+          titulo: 'Asesorías y programas',
+          tipo: 'servicios',
+          items: [
+            { titulo: 'Asesoría legal para la autonomía', detalle: 'Apoyos, testamentos y protección de derechos' },
+            { titulo: 'Orientación a familias cuidadoras', detalle: 'Cuidados, demencias y buen trato' },
+            { titulo: 'Consultoría para instituciones', detalle: 'Enfoque de derechos y prevención del edadismo' },
+            { titulo: 'Envejecimiento activo y salud cerebral', detalle: 'Inclusión digital e intergeneracionalidad' },
+          ],
+        },
+        redes: [
+          { tipo: 'instagram', url: 'https://www.instagram.com/rosaestela.gh/', label: '@rosaestela.gh' },
+          { tipo: 'instagram', url: 'https://www.instagram.com/nietositinerantes/', label: '@nietositinerantes' },
+          { tipo: 'linkedin', url: 'https://www.linkedin.com/in/rosaestela-g%C3%B3mez-holgu%C3%ADn-1119b142', label: 'LinkedIn' },
+          { tipo: 'correo', url: 'mailto:rosaegomezholguin@gmail.com', label: 'rosaegomezholguin@gmail.com' },
+        ],
+      },
+    ],
   },
   {
     slug: 'chile',
