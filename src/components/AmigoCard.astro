@@ -108,7 +108,7 @@ const iniciales = amigo.nombre
     align-items: start;
     padding: 1.5rem;
     border-radius: var(--radius);
-    background: var(--card-bg, var(--algodon));
+    background: var(--card-bg, var(--surface));
   }
   .amigo--sin-foto {
     grid-template-columns: 1fr;
@@ -135,13 +135,13 @@ const iniciales = amigo.nombre
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid var(--papel);
+    border: 4px solid var(--bg);
   }
   .amigo__iniciales {
     display: grid;
     place-items: center;
-    background: var(--cacao);
-    color: var(--papel);
+    background: var(--block);
+    color: var(--on-block);
     font-family: var(--font-display);
     font-weight: 800;
     font-size: 2.4rem;
@@ -156,7 +156,7 @@ const iniciales = amigo.nombre
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--fuego);
+    color: var(--accent-text);
   }
   .amigo__nombre {
     font-size: 1.6rem;
@@ -166,7 +166,7 @@ const iniciales = amigo.nombre
   .amigo__rol {
     margin-top: 0.25rem;
     font-weight: 600;
-    color: var(--jade);
+    color: var(--link);
   }
   .amigo__exp {
     display: grid;
@@ -218,8 +218,8 @@ const iniciales = amigo.nombre
     gap: 0.25rem 1rem;
     padding: 0.7rem 1rem;
     border-radius: var(--radius);
-    background: var(--cacao);
-    color: var(--papel);
+    background: var(--block);
+    color: var(--on-block);
     text-decoration: none;
     transition: background-color 0.2s;
   }
@@ -250,15 +250,15 @@ const iniciales = amigo.nombre
     gap: 0.4rem;
     padding: 0.4rem 0.85rem;
     border-radius: 999px;
-    border: 2px solid var(--cacao);
+    border: 2px solid var(--ink);
     font-weight: 600;
     font-size: 0.9375rem;
     text-decoration: none;
     transition: background-color 0.2s, color 0.2s;
   }
   .amigo__redes a:hover {
-    background: var(--cacao);
-    color: var(--papel);
+    background: var(--ink);
+    color: var(--bg);
   }
   @container (max-width: 560px) {
     .amigo {

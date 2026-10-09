@@ -120,8 +120,8 @@ const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
     overflow: visible;
   }
   .mapa__base {
-    fill: #e3d6c2;
-    stroke: var(--papel);
+    fill: var(--map-land);
+    stroke: var(--bg);
     stroke-width: 0.8;
   }
   .mapa__mundo {
@@ -132,7 +132,7 @@ const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
   .mapa__pais path,
   path.mapa__pais {
     fill: var(--tono);
-    stroke: var(--papel);
+    stroke: var(--bg);
     stroke-width: 0.8;
     transform-box: fill-box;
     transform-origin: center;
@@ -151,16 +151,16 @@ const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
   .mapa--hero .mapa__pais.is-hover path {
     transform: scale(1.05);
     filter: drop-shadow(0 6px 10px rgba(42, 29, 20, 0.35));
-    stroke: var(--cacao);
+    stroke: var(--ink);
     stroke-width: 1.4;
   }
   .mapa__guia line {
-    stroke: var(--cacao);
+    stroke: var(--ink);
     stroke-width: 1.2;
     stroke-dasharray: 3 3;
   }
   .mapa__guia circle {
-    fill: var(--cacao);
+    fill: var(--ink);
   }
   @keyframes pais-in {
     from {
@@ -186,14 +186,14 @@ const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
     gap: 0.45rem;
     padding: 0.35rem 0.8rem;
     border-radius: 999px;
-    background: var(--papel);
-    color: var(--cacao);
+    background: var(--bg);
+    color: var(--ink);
     font-family: var(--font-display);
     font-weight: 600;
     font-size: clamp(0.8rem, 1.2vw, 0.98rem);
     white-space: nowrap;
     text-decoration: none;
-    box-shadow: 0 4px 12px rgba(42, 29, 20, 0.16);
+    box-shadow: 0 4px 12px var(--shadow);
     transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
   }
   .mapa__pill-dot {
@@ -206,8 +206,8 @@ const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
   .mapa__pill.is-hover,
   .mapa__pill:focus-visible {
     transform: scale(1.08);
-    background: var(--cacao);
-    color: var(--papel);
+    background: var(--block);
+    color: var(--on-block);
   }
   @keyframes pill-in {
     from {
@@ -222,7 +222,7 @@ const pct = (v: number, total: number) => `${((v / total) * 100).toFixed(2)}%`;
   }
   .mapa--mini path.mapa__pais.is-active {
     fill-opacity: 1;
-    stroke: var(--cacao);
+    stroke: var(--ink);
     stroke-width: 1.2;
   }
 

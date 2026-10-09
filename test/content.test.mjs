@@ -115,6 +115,10 @@ describe('sitemap, robots y enlaces alternativos', () => {
     assert.deepEqual(locs, [
       'https://geroamigos.com/',
       'https://geroamigos.com/about/',
+      'https://geroamigos.com/recursos/',
+      'https://geroamigos.com/blog/',
+      'https://geroamigos.com/blog/que-es-la-gerontologia/',
+      'https://geroamigos.com/eventos/',
       'https://geroamigos.com/contact/',
       'https://geroamigos.com/privacy/',
     ]);
@@ -126,7 +130,16 @@ describe('sitemap, robots y enlaces alternativos', () => {
   });
 
   test('cada página HTML enlaza su versión Markdown existente', () => {
-    for (const page of ['index.html', 'about/index.html', 'contact/index.html', 'privacy/index.html']) {
+    for (const page of [
+      'index.html',
+      'about/index.html',
+      'recursos/index.html',
+      'blog/index.html',
+      'blog/que-es-la-gerontologia/index.html',
+      'eventos/index.html',
+      'contact/index.html',
+      'privacy/index.html',
+    ]) {
       const href = read(page).match(/<link rel="alternate" type="text\/markdown" href="([^"]+)"/)?.[1];
       assert.ok(href && existsSync(join(DIST, href)), `${page} → ${href}`);
     }
@@ -280,5 +293,145 @@ describe('portada: mapa y recorrido por la red', () => {
     const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
     const org = data['@graph'].find((x) => x['@type'] === 'Organization');
     assert.deepEqual(org.areaServed.filter((a) => a['@type'] === 'Country').map((a) => a.name), NOMBRES);
+  });
+});
+
+describe('menú, accesibilidad y cursos', () => {
+  const PAGINAS = [
+    'index.html',
+    'about/index.html',
+    'recursos/index.html',
+    'blog/index.html',
+    'blog/que-es-la-gerontologia/index.html',
+    'eventos/index.html',
+  ];
+  const menuDe = (html) => {
+    const start = html.indexOf('id="menu-principal"');
+    return html.slice(start, html.indexOf('</nav>', start));
+  };
+
+  test('el menú enlaza Nosotros, Recursos, Blog y Eventos en todas las páginas', () => {
+    for (const page of PAGINAS) {
+      const menu = menuDe(read(page));
+      for (const href of ['/about/', '/recursos/', '/blog/', '/eventos/', '/#contacto']) {
+        assert.ok(menu.includes(`href="${href}"`), `${page}: ${href}`);
+      }
+    }
+  });
+
+  test('la sección actual queda marcada en el menú', () => {
+    assert.match(menuDe(read('eventos/index.html')), /href="\/eventos\/" aria-current="page"/);
+    assert.match(menuDe(read('blog/que-es-la-gerontologia/index.html')), /href="\/blog\/" aria-current="page"/);
+    assert.ok(!menuDe(read('index.html')).includes('aria-current'));
+  });
+
+  test('control de accesibilidad: texto normal, texto grande y modo oscuro', () => {
+    const html = read('index.html');
+    assert.match(html, /role="group" aria-label="Accesibilidad[^"]*"/);
+    assert.match(html, /data-text-size="base" aria-pressed="true"/);
+    assert.match(html, /data-text-size="lg" aria-pressed="false"/);
+    assert.match(html, /data-theme-toggle aria-pressed="false"/);
+  });
+
+  test('tema y tamaño se aplican en <head>, antes de pintar, y respetan el sistema', () => {
+    const head = read('index.html').split('</head>')[0];
+    assert.match(head, /localStorage\.getItem\('ga-theme'\)/);
+    assert.match(head, /localStorage\.getItem\('ga-text'\)/);
+    assert.match(head, /prefers-color-scheme: dark/);
+    assert.match(head, /<meta name="theme-color" content="#FBF6EE" data-theme-color/);
+  });
+
+  test('los estilos definen el modo oscuro y el texto grande', () => {
+    const html = read('index.html');
+    const css = [...html.matchAll(/<link rel="stylesheet" href="([^"]+\.css)"/g)].map((m) => read(m[1].replace(/^\//, ''))).join('\n')
+      + [...html.matchAll(/<style>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
+    assert.match(css, /\[data-theme=["']?dark["']?\]/);
+    assert.match(css, /\[data-text=["']?lg["']?\]/);
+  });
+
+  test('Cursos online aparece como "Pronto" en la barra superior', () => {
+    const html = read('index.html');
+    const topbar = html.slice(html.indexOf('class="topbar"'), html.indexOf('data-header'));
+    assert.match(visibleText(topbar), /Cursos online Pronto/);
+    assert.match(topbar, /aria-controls="cursos-aviso"/);
+  });
+});
+
+describe('recursos (demostración)', () => {
+  const html = read('recursos/index.html');
+  const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+
+  test('muestra la guía de pago y los tips gratis en PDF', () => {
+    assert.equal(main.match(/class="recurso recurso--[a-z]+"/g).length, 2);
+    const texto = visibleText(main);
+    for (const t of ['Guía gerontológica integral', 'De pago · PDF + Excel', 'Comprar', 'Tips de cuidados en casa', 'Gratis · PDF', 'Descargar PDF gratis']) {
+      assert.ok(texto.includes(t), t);
+    }
+  });
+
+  test('es solo demostrativo: no descarga archivos ni lleva a un pago', () => {
+    assert.match(visibleText(main), /demostración/i);
+    assert.ok(!/\sdownload[\s=>]/.test(main), 'sin atributo download');
+    assert.ok(!/href="[^"]+\.(pdf|xlsx?|docx?)"/.test(main), 'sin enlaces a archivos');
+    assert.equal(main.match(/<button class="btn [^"]*" type="button"[^>]*data-demo=/g).length, 2);
+  });
+
+  test('index.md describe ambos recursos como demostración', () => {
+    const md = read('recursos/index.md');
+    assert.match(md, /^# Recursos/);
+    assert.match(md, /## Guía gerontológica integral \(de pago, USD 19, precio de ejemplo\)/);
+    assert.match(md, /## Tips de cuidados en casa \(gratis\)/);
+    assert.match(md, /demostración/);
+  });
+});
+
+describe('blog y multimedia', () => {
+  test('el blog lista el artículo y anuncia multimedia', () => {
+    const html = read('blog/index.html');
+    assert.match(html, /<a href="\/blog\/que-es-la-gerontologia\/"[^>]*>¿Qué es la gerontología y para qué sirve\?<\/a>/);
+    assert.match(visibleText(html), /Multimedia Próximamente/);
+  });
+
+  test('el artículo es completo y cita a la OMS', () => {
+    const html = read('blog/que-es-la-gerontologia/index.html');
+    assert.match(html, /<h1[^>]*>¿Qué es la gerontología y para qué sirve\?<\/h1>/);
+    assert.match(html, /<time datetime="2026-10-09"[^>]*>9 de octubre de 2026<\/time>/);
+    assert.ok(mainText(html).length >= 4000, `${mainText(html).length} caracteres`);
+    assert.ok((html.match(/href="https:\/\/www\.who\.int\//g) ?? []).length >= 4, 'fuentes de la OMS');
+    assert.match(html, /href="https:\/\/www\.paho\.org\//);
+    assert.match(html, /<h2 id="fuentes">Fuentes<\/h2>/);
+  });
+
+  test('index.md del artículo conserva las fuentes y enlaces absolutos', () => {
+    const md = read('blog/que-es-la-gerontologia/index.md');
+    assert.match(md, /^# ¿Qué es la gerontología y para qué sirve\?/);
+    assert.match(md, /## Fuentes/);
+    assert.match(md, /\(https:\/\/geroamigos\.com\/eventos\/\)/);
+    assert.ok(!/\]\(\/[a-z]/.test(md), 'sin enlaces relativos');
+  });
+});
+
+describe('eventos internacionales', () => {
+  const html = read('eventos/index.html');
+  const main = html.slice(html.indexOf('<main'), html.indexOf('</main>'));
+  const eventos = main.match(/class="evento evento--(latam|iberia|mundo)"/g) ?? [];
+
+  test('lista al menos 8 eventos, cada uno con fecha, ciudad, país y sitio oficial', () => {
+    assert.ok(eventos.length >= 8, `${eventos.length} eventos`);
+    assert.equal((main.match(/class="evento__link" href="https:\/\/[^"]+" target="_blank" rel="noopener"/g) ?? []).length, eventos.length);
+    assert.equal((main.match(/<time datetime="\d{4}-\d{2}-\d{2}"/g) ?? []).length, eventos.length);
+    assert.equal((main.match(/class="evento__nombre"/g) ?? []).length, eventos.length);
+  });
+
+  test('los eventos van en orden cronológico y son posteriores a la verificación', () => {
+    const fechas = [...main.matchAll(/<time datetime="(\d{4}-\d{2}-\d{2})"/g)].map((m) => m[1]);
+    assert.deepEqual(fechas, [...fechas].sort());
+    assert.ok(fechas.every((f) => f >= '2026-10-09'), fechas.join(', '));
+  });
+
+  test('index.md trae los mismos eventos', () => {
+    const md = read('eventos/index.md');
+    assert.equal((md.match(/^- \*\*/gm) ?? []).length, eventos.length);
+    assert.match(md, /Fechas verificadas el 9 de octubre de 2026/);
   });
 });

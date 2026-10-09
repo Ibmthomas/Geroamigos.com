@@ -70,7 +70,24 @@ const structuredData = {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <meta name="theme-color" content="#FBF6EE" data-theme-color />
+    <script is:inline>
+      // Tema y tamaño de texto antes del primer pintado (sin parpadeo).
+      // Sin elección guardada, el tema sigue la preferencia del sistema.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        var theme = null, text = null;
+        try { theme = localStorage.getItem('ga-theme'); text = localStorage.getItem('ga-text'); } catch (e) {}
+        if (theme !== 'dark' && theme !== 'light') {
+          theme = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        d.setAttribute('data-theme', theme);
+        if (text === 'lg') d.setAttribute('data-text', 'lg');
+        var meta = document.querySelector('meta[data-theme-color]');
+        if (meta && theme === 'dark') meta.setAttribute('content', '#17110C');
+      })();
+    </script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
@@ -78,7 +95,6 @@ const structuredData = {
     {markdown && <link rel="alternate" type="text/markdown" href={markdown} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#FBF6EE" />
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_419" />
@@ -123,8 +139,8 @@ const structuredData = {
     z-index: 100;
     padding: 0.6rem 1rem;
     border-radius: 999px;
-    background: var(--cacao);
-    color: var(--papel);
+    background: var(--block);
+    color: var(--on-block);
     font-weight: 700;
     text-decoration: none;
   }

@@ -1,0 +1,188 @@
+---
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/Icon.astro';
+import { EVENTOS_PAGE, eventosPorMes, rangoFechas } from '../../data/eventos';
+import { mailto } from '../../config';
+
+const { title, eyebrow, description, lead, nota, invitacion } = EVENTOS_PAGE;
+const meses = eventosPorMes();
+---
+<Page title={title} eyebrow={eyebrow} description={description} lead={lead} ancho="wide">
+  <p class="eventos__nota" role="note"><Icon name="calendario" size={20} /> {nota}</p>
+
+  {meses.map(({ mes, eventos }) => (
+    <section class="mes" aria-label={mes}>
+      <h2 class="mes__titulo">{mes}</h2>
+      <ul class="eventos">
+        {eventos.map((e) => (
+          <li class:list={['evento', `evento--${e.region}`]}>
+            <p class="evento__fecha">
+              <time datetime={e.inicio}>{rangoFechas(e)}</time>
+              {e.fechaPorConfirmar && <span class="evento__confirmar">Fecha por confirmar</span>}
+            </p>
+            <div class="evento__cuerpo">
+              <h3 class="evento__nombre">{e.nombre}</h3>
+              <p class="evento__desc">{e.descripcion}</p>
+              <ul class="evento__datos">
+                <li><Icon name="ubicacion" size={18} /> <span><strong>{e.ciudad}, {e.pais}</strong>{e.lugar && <> · {e.lugar}</>}</span></li>
+                <li><Icon name="politicas" size={18} /> <span>{e.organizador}</span></li>
+                <li><Icon name="web" size={18} /> <span>{e.formato}</span></li>
+              </ul>
+            </div>
+            <a class="evento__link" href={e.url} target="_blank" rel="noopener">
+              {e.enlace ?? 'Sitio oficial'} <Icon name="externo" size={16} />
+              <span class="sr-only">: {e.nombre} (se abre en otra pestaña)</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  <aside class="eventos__invita">
+    <h2>{invitacion.title}</h2>
+    <p>{invitacion.texto}</p>
+    <a class="btn btn--primary" href={mailto('Evento de gerontología para la agenda · GeroAmigos')}>{invitacion.cta}</a>
+  </aside>
+</Page>
+
+<style>
+  .eventos__nota {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--radius);
+    background: var(--jade-suave);
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .eventos__nota :global(svg) {
+    flex: none;
+  }
+  .mes {
+    margin-top: 2.5rem;
+  }
+  .mes__titulo {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .eventos {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .evento {
+    --tono: var(--jade);
+    display: grid;
+    grid-template-columns: 11rem 1fr auto;
+    gap: 1rem 2rem;
+    align-items: start;
+    padding: 1.4rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .evento--latam { --tono: var(--terracota); }
+  .evento--iberia { --tono: var(--maiz); }
+  .evento__fecha {
+    display: grid;
+    gap: 0.4rem;
+    justify-items: start;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .evento__fecha time {
+    padding-left: 0.8rem;
+    border-left: 5px solid var(--tono);
+  }
+  .evento__confirmar {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: var(--maiz-suave);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  .evento__nombre {
+    font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+  .evento__desc {
+    margin-top: 0.4rem;
+    color: var(--ink-soft);
+  }
+  .evento__datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 0.8rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.95rem;
+  }
+  .evento__datos li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+  .evento__datos :global(svg) {
+    flex: none;
+    margin-top: 0.15em;
+    color: var(--tono);
+  }
+  .evento__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.95rem;
+    border-radius: 999px;
+    border: 2px solid var(--ink);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .evento__link:hover {
+    background: var(--ink);
+    color: var(--bg);
+  }
+
+  .eventos__invita {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border-radius: var(--radius);
+    background: var(--surface);
+  }
+  .eventos__invita h2 {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+  }
+  .eventos__invita p {
+    margin: 0.8rem 0 1.4rem;
+    color: var(--ink-soft);
+    max-width: 55ch;
+  }
+
+  @media (max-width: 860px) {
+    .evento {
+      grid-template-columns: 1fr;
+      gap: 0.8rem;
+    }
+    .evento__link {
+      justify-self: start;
+    }
+  }
+</style>

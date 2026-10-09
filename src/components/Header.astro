@@ -1,8 +1,46 @@
 ---
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
-import { NAV } from '../config';
+import { CURSOS, NAV } from '../config';
+
+// Página actual: marca el enlace del menú correspondiente (aria-current)
+const actual = Astro.url.pathname;
+const esActual = (href: string) => !href.includes('#') && href !== '/' && actual.startsWith(href);
 ---
+<!-- Barra superior: cursos (próximamente) y accesibilidad. No es fija; el encabezado sí. -->
+<div class="topbar">
+  <div class="wrap topbar__inner">
+    <div class="cursos">
+      <button
+        class="cursos__btn"
+        type="button"
+        aria-expanded="false"
+        aria-controls="cursos-aviso"
+        data-cursos-toggle
+      >
+        <Icon name="birrete" size={18} />
+        <span>{CURSOS.label}</span>
+        <span class="cursos__badge">{CURSOS.badge}</span>
+      </button>
+      <p class="cursos__aviso" id="cursos-aviso" role="status" hidden data-cursos-aviso>{CURSOS.mensaje}</p>
+    </div>
+
+    <div class="a11y" role="group" aria-label="Accesibilidad: tamaño del texto y tema">
+      <button class="a11y__btn" type="button" data-text-size="base" aria-pressed="true" title="Texto normal">
+        <span aria-hidden="true">A</span><span class="sr-only">Texto normal</span>
+      </button>
+      <button class="a11y__btn a11y__btn--lg" type="button" data-text-size="lg" aria-pressed="false" title="Texto grande">
+        <span aria-hidden="true">A+</span><span class="sr-only">Texto grande</span>
+      </button>
+      <button class="a11y__btn a11y__btn--theme" type="button" data-theme-toggle aria-pressed="false" title="Modo oscuro">
+        <Icon name="luna" size={18} class="a11y__luna" />
+        <Icon name="sol" size={18} class="a11y__sol" />
+        <span class="sr-only">Modo oscuro</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <header class="header" data-header>
   <div class="wrap header__bar">
     <Logo />
@@ -22,7 +60,9 @@ import { NAV } from '../config';
     <nav class="header__nav" id="menu-principal" aria-label="Principal" data-menu>
       <ul>
         {NAV.map((item) => (
-          <li><a href={item.href}>{item.label}</a></li>
+          <li>
+            <a href={item.href} aria-current={esActual(item.href) ? 'page' : undefined}>{item.label}</a>
+          </li>
         ))}
       </ul>
       <a class="btn btn--dark header__cta" href="/#contacto">Agenda una asesoría</a>
@@ -31,6 +71,7 @@ import { NAV } from '../config';
 </header>
 
 <script>
+  const root = document.documentElement;
   const header = document.querySelector<HTMLElement>('[data-header]');
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const menu = document.querySelector<HTMLElement>('[data-menu]');
@@ -44,19 +85,198 @@ import { NAV } from '../config';
 
   toggle?.addEventListener('click', () => setOpen(toggle.getAttribute('aria-expanded') !== 'true'));
   menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)));
-  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
 
   const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Accesibilidad: tamaño de texto y tema (se guardan en este navegador)
+  const guardar = (clave: string, valor: string) => {
+    try {
+      localStorage.setItem(clave, valor);
+    } catch {
+      /* navegación privada: se aplica solo en esta visita */
+    }
+  };
+  const tamanos = document.querySelectorAll<HTMLButtonElement>('[data-text-size]');
+  const temaBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const metaColor = document.querySelector<HTMLMetaElement>('meta[data-theme-color]');
+
+  const pintar = () => {
+    const grande = root.getAttribute('data-text') === 'lg';
+    tamanos.forEach((b) => b.setAttribute('aria-pressed', String((b.dataset.textSize === 'lg') === grande)));
+    const oscuro = root.getAttribute('data-theme') === 'dark';
+    temaBtn?.setAttribute('aria-pressed', String(oscuro));
+    if (temaBtn) temaBtn.title = oscuro ? 'Modo claro' : 'Modo oscuro';
+    metaColor?.setAttribute('content', oscuro ? '#17110C' : '#FBF6EE');
+  };
+
+  tamanos.forEach((b) =>
+    b.addEventListener('click', () => {
+      if (b.dataset.textSize === 'lg') root.setAttribute('data-text', 'lg');
+      else root.removeAttribute('data-text');
+      guardar('ga-text', b.dataset.textSize ?? 'base');
+      pintar();
+    }),
+  );
+  temaBtn?.addEventListener('click', () => {
+    const tema = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', tema);
+    guardar('ga-theme', tema);
+    pintar();
+  });
+  pintar();
+
+  // Cursos online: aviso "Pronto"
+  const cursosBtn = document.querySelector<HTMLButtonElement>('[data-cursos-toggle]');
+  const cursosAviso = document.querySelector<HTMLElement>('[data-cursos-aviso]');
+  const setCursos = (open: boolean) => {
+    cursosBtn?.setAttribute('aria-expanded', String(open));
+    if (cursosAviso) cursosAviso.hidden = !open;
+  };
+  cursosBtn?.addEventListener('click', () => setCursos(cursosBtn.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('click', (e) => {
+    if (cursosBtn && !cursosBtn.parentElement?.contains(e.target as Node)) setCursos(false);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    setOpen(false);
+    setCursos(false);
+  });
 </script>
 
 <style>
+  /* El encabezado usa tamaños propios (em sobre 16px): con "texto grande" crece el
+     contenido de la página, no el menú, que así no se desborda. */
+  .topbar,
+  .header {
+    font-size: 16px;
+  }
+
+  /* Barra superior */
+  .topbar {
+    position: relative;
+    z-index: 60;
+    background: var(--block);
+    color: var(--on-block);
+  }
+  .topbar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+    min-height: 3em;
+  }
+  .cursos {
+    position: relative;
+  }
+  .cursos__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.35em 0.4em 0.35em 0.85em;
+    border: 1px solid rgba(251, 246, 238, 0.28);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.9375em;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .cursos__btn:hover {
+    border-color: var(--maiz);
+  }
+  .cursos__btn span {
+    white-space: nowrap;
+  }
+  @media (max-width: 420px) {
+    .cursos__btn :global(svg) {
+      display: none;
+    }
+  }
+  .cursos__badge {
+    padding: 0.15em 0.6em;
+    border-radius: 999px;
+    background: var(--maiz);
+    color: var(--cacao);
+    font-family: var(--font-mono);
+    font-size: 0.75em;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .cursos__aviso {
+    position: absolute;
+    left: 0;
+    top: calc(100% + 0.6em);
+    width: min(20em, calc(100vw - 2.5em));
+    padding: 0.9em 1em;
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 12px 28px var(--shadow);
+    font-size: 0.9375em;
+    line-height: 1.45;
+  }
+
+  .a11y {
+    display: inline-flex;
+    gap: 0.25em;
+    padding: 0.25em;
+    border-radius: 999px;
+    background: rgba(251, 246, 238, 0.1);
+  }
+  .a11y__btn {
+    display: grid;
+    place-items: center;
+    width: 2.25em;
+    height: 2.25em;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--papel);
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1em;
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .a11y__btn:hover {
+    background: rgba(251, 246, 238, 0.12);
+  }
+  .a11y__btn[aria-pressed='true'] {
+    background: rgba(251, 246, 238, 0.24);
+  }
+  .a11y__btn--lg {
+    color: var(--maiz);
+    font-size: 1.05em;
+  }
+  .a11y__btn--theme {
+    color: #8ad4ca;
+  }
+  .a11y__btn--theme[aria-pressed='true'] {
+    color: var(--maiz);
+  }
+  /* Luna en modo claro (activa el oscuro); sol en modo oscuro (vuelve al claro) */
+  .a11y__btn :global(.a11y__sol) {
+    display: none;
+  }
+  :global(:root[data-theme='dark']) .a11y__btn :global(.a11y__sol) {
+    display: block;
+  }
+  :global(:root[data-theme='dark']) .a11y__btn :global(.a11y__luna) {
+    display: none;
+  }
+
+  /* Encabezado fijo */
   .header {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--papel);
+    background: var(--bg);
     border-bottom: 1px solid transparent;
     transition: border-color 0.2s;
   }
@@ -67,53 +287,57 @@ import { NAV } from '../config';
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
-    min-height: 5rem;
+    gap: 1.5em;
+    min-height: 5em;
   }
   .header__nav {
     display: flex;
     align-items: center;
-    gap: 2.25rem;
+    gap: 2.25em;
   }
   .header__nav ul {
     display: flex;
-    gap: 2rem;
+    gap: 1.75em;
     margin: 0;
     padding: 0;
     list-style: none;
   }
   .header__nav ul a {
     font-weight: 500;
-    font-size: 1.0625rem;
+    font-size: 1.0625em;
     text-decoration: none;
-    padding-block: 0.4rem;
+    padding-block: 0.4em;
     background: linear-gradient(var(--terracota), var(--terracota)) no-repeat left bottom / 0 2px;
     transition: background-size 0.25s;
   }
-  .header__nav ul a:hover {
+  .header__nav ul a:hover,
+  .header__nav ul a[aria-current='page'] {
     background-size: 100% 2px;
   }
   .header__cta {
-    min-height: 2.9rem;
-    padding-inline: 1.3rem;
-    font-size: 1.0625rem;
+    min-height: 2.9em;
+    padding-inline: 1.3em;
+    font-size: 1.0625em;
   }
   .header__toggle {
     display: none;
     place-items: center;
-    width: 3rem;
-    height: 3rem;
+    width: 3em;
+    height: 3em;
     border: 0;
     border-radius: 999px;
-    background: var(--algodon);
-    color: var(--cacao);
+    background: var(--surface);
+    color: var(--ink);
     cursor: pointer;
   }
   .header__toggle :global(.icon-close) {
     display: none;
   }
+  .header__bar :global(.logo--md) {
+    font-size: 1.6em;
+  }
 
-  @media (max-width: 880px) {
+  @media (max-width: 1180px) {
     .header__toggle {
       display: grid;
     }
@@ -122,9 +346,11 @@ import { NAV } from '../config';
       inset: 100% 0 auto 0;
       flex-direction: column;
       align-items: stretch;
-      gap: 1.25rem;
-      padding: 1rem var(--gutter) 2rem;
-      background: var(--papel);
+      gap: 1.25em;
+      max-height: calc(100vh - 5em);
+      overflow-y: auto;
+      padding: 1em var(--gutter) 2em;
+      background: var(--bg);
       border-bottom: 1px solid var(--line);
       display: none;
     }
@@ -143,14 +369,14 @@ import { NAV } from '../config';
     }
     .header__nav ul a {
       display: block;
-      padding-block: 0.9rem;
-      font-size: 1.25rem;
+      padding-block: 0.9em;
+      font-size: 1.25em;
       border-bottom: 1px solid var(--line);
       background: none;
     }
     .header__cta {
-      min-height: 3.25rem;
-      font-size: 1.1875rem;
+      min-height: 3.25em;
+      font-size: 1.1875em;
     }
   }
 </style>
