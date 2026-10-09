@@ -107,7 +107,7 @@ const num = (n: number) => String(n).padStart(2, '0');
     margin-inline: auto;
     padding: 1rem;
     border-radius: 50%;
-    background: var(--algodon);
+    background: var(--surface);
     aspect-ratio: 1;
     overflow: hidden;
     display: grid;
@@ -152,8 +152,8 @@ const num = (n: number) => String(n).padStart(2, '0');
     color: var(--ink);
   }
   .rail__lista a.is-active {
-    background: var(--cacao);
-    color: var(--papel);
+    background: var(--block);
+    color: var(--on-block);
   }
   .rail__lista a.is-active .rail__num {
     color: var(--maiz);
@@ -174,7 +174,7 @@ const num = (n: number) => String(n).padStart(2, '0');
       top: 5rem;
       z-index: 20;
       margin-inline: calc(var(--gutter) * -1);
-      background: var(--papel);
+      background: var(--bg);
       border-bottom: 1px solid var(--line);
     }
     .rail {

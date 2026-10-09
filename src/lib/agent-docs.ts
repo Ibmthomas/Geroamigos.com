@@ -12,6 +12,9 @@ import {
   VALORES,
 } from '../data/home';
 import { PAISES } from '../data/paises';
+import { RECURSOS, RECURSOS_PAGE } from '../data/recursos';
+import { BLOG_PAGE, fechaLarga, posts, type PostFrontmatter } from './blog';
+import { EVENTOS_PAGE, eventosPorMes, rangoFechas } from '../data/eventos';
 
 const abs = (path: string) => new URL(path, SITE.url).href;
 
@@ -112,6 +115,107 @@ export function pageMarkdown(entry: PageEntry, htmlPath: string): string {
   ].join('\n');
 }
 
+export function blogMarkdown(): string {
+  const { title, lead, multimedia } = BLOG_PAGE;
+  return [
+    `# ${title}`,
+    '',
+    `> ${lead}`,
+    '',
+    '## Artículos',
+    '',
+    ...posts.map(
+      ({ slug, entry: { frontmatter: fm } }) =>
+        `- [${fm.title}](${abs(`/blog/${slug}/index.md`)}) (${fechaLarga(fm.date)}, ${fm.lectura} min): ${fm.description}`,
+    ),
+    '',
+    `## ${multimedia.title} (${multimedia.badge.toLowerCase()})`,
+    '',
+    `${multimedia.lead} Formatos: ${multimedia.formatos.join(', ').toLowerCase()}.`,
+    '',
+    footer('/blog/'),
+    '',
+  ].join('\n');
+}
+
+interface PostEntry {
+  frontmatter: PostFrontmatter;
+  rawContent: () => string;
+}
+
+export function postMarkdown(entry: PostEntry, htmlPath: string): string {
+  const fm = entry.frontmatter;
+  return [
+    `# ${fm.title}`,
+    '',
+    `> ${fm.lead}`,
+    '',
+    `${fm.autor} · ${fechaLarga(fm.date)} · ${fm.lectura} min de lectura`,
+    '',
+    absolutizeLinks(entry.rawContent().trim()),
+    '',
+    footer(htmlPath),
+    '',
+  ].join('\n');
+}
+
+export function eventosMarkdown(): string {
+  const { title, lead, nota, invitacion } = EVENTOS_PAGE;
+  return [
+    `# ${title}`,
+    '',
+    `> ${lead}`,
+    '',
+    nota,
+    '',
+    ...eventosPorMes().flatMap(({ mes, eventos }) => [
+      `## ${mes}`,
+      '',
+      ...eventos.map(
+        (e) =>
+          `- **${e.nombre}** (${rangoFechas(e)}${e.fechaPorConfirmar ? ', fecha por confirmar' : ''}): ${e.descripcion} ${e.ciudad}, ${e.pais}${e.lugar ? ` (${e.lugar})` : ''}. ${e.formato}. Organiza: ${e.organizador}. [${e.enlace ?? 'Sitio oficial'}](${e.url})`,
+      ),
+      '',
+    ]),
+    `## ${invitacion.title}`,
+    '',
+    `${invitacion.texto} Escribe a [${SITE.email}](mailto:${SITE.email}).`,
+    '',
+    footer('/eventos/'),
+    '',
+  ].join('\n');
+}
+
+export function recursosMarkdown(): string {
+  const { title, lead, aviso, proximos } = RECURSOS_PAGE;
+  return [
+    `# ${title}`,
+    '',
+    `> ${lead}`,
+    '',
+    `**${aviso}**`,
+    '',
+    ...RECURSOS.flatMap((r) => [
+      `## ${r.titulo} (${r.acceso === 'gratis' ? 'gratis' : `de pago, ${r.precio}, precio de ejemplo`})`,
+      '',
+      `${r.subtitulo}. ${r.descripcion}`,
+      '',
+      `- Formato: ${r.extension}.`,
+      `- Para: ${r.publico}.`,
+      `- Incluye: ${r.incluye.map((i) => i.replace(/\.$/, '')).join('; ')}.`,
+      '',
+    ]),
+    `## ${proximos.title}`,
+    '',
+    proximos.lead,
+    '',
+    ...proximos.formatos.map((f) => `- **${f.formato}:** ${f.texto}`),
+    '',
+    footer('/recursos/'),
+    '',
+  ].join('\n');
+}
+
 const WHEN_TO_USE = [
   'Una institución pública o privada, un gobierno o una ONG de Latinoamérica busca consultoría o asistencia gerontológica para diseñar programas, servicios o políticas sobre envejecimiento.',
   'Una residencia de personas mayores necesita asesoría en modelos de cuidado, calidad y buen trato.',
@@ -148,6 +252,10 @@ export function llmsTxt(): string {
     `- [${page('/').label}](${abs(page('/').markdown)}): servicios, valores, con quién trabajamos y contacto.`,
     `- [${page('/about/').label}](${abs(page('/about/').markdown)}): quiénes somos, propósito y valores.`,
     `- [${page('/contact/').label}](${abs(page('/contact/').markdown)}): cómo escribirnos y qué incluir en el mensaje.`,
+    `- [${page('/eventos/').label}](${abs(page('/eventos/').markdown)}): agenda de congresos de gerontología, geriatría y envejecimiento en Latinoamérica y el mundo, con fechas verificadas.`,
+    `- [${page('/blog/').label}](${abs(page('/blog/').markdown)}): artículos sobre gerontología y persona mayor, con fuentes.`,
+    `- [${page('/blog/que-es-la-gerontologia/').label}](${abs(page('/blog/que-es-la-gerontologia/').markdown)}): qué estudia la gerontología, diferencia con la geriatría y datos de la OMS.`,
+    `- [${page('/recursos/').label}](${abs(page('/recursos/').markdown)}): guías en PDF, Excel y Word (por ahora, vista previa de demostración).`,
     '',
     '## Agentes',
     '',

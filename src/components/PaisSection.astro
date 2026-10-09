@@ -76,7 +76,7 @@ const slots = [0, 1, 2].map((i) => fotos[i]);
 <style>
   .pais {
     --acento: var(--terracota);
-    --acento-suave: #f4cdbf;
+    --acento-suave: var(--terracota-suave);
     padding-block: clamp(2.5rem, 6vw, 4.5rem);
     scroll-margin-top: 6rem;
   }
@@ -114,15 +114,15 @@ const slots = [0, 1, 2].map((i) => fotos[i]);
     bottom: clamp(0.75rem, 2.5vw, 1.5rem);
     padding: 0.9rem 1.3rem 1rem;
     border-radius: var(--radius);
-    background: var(--papel);
-    box-shadow: 0 8px 24px rgba(42, 29, 20, 0.18);
+    background: var(--bg);
+    box-shadow: 0 8px 24px var(--shadow);
   }
   .pais__num {
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     font-weight: 600;
     letter-spacing: 0.12em;
-    color: var(--fuego);
+    color: var(--accent-text);
   }
   .pais__nombre {
     font-size: clamp(2rem, 5vw, 3.4rem);
@@ -174,7 +174,7 @@ const slots = [0, 1, 2].map((i) => fotos[i]);
     height: 4rem;
     border-radius: 50%;
     background: var(--acento-suave);
-    color: var(--cacao);
+    color: var(--ink);
     font-family: var(--font-display);
     font-weight: 800;
     font-size: 1.6rem;
@@ -183,7 +183,7 @@ const slots = [0, 1, 2].map((i) => fotos[i]);
     font-weight: 600;
   }
   .pais__pendiente a {
-    color: var(--jade);
+    color: var(--link);
     font-weight: 600;
     text-underline-offset: 4px;
   }
@@ -214,7 +214,7 @@ const slots = [0, 1, 2].map((i) => fotos[i]);
     gap: 0.5rem;
     height: 100%;
     overflow: hidden;
-    background: var(--algodon);
+    background: var(--surface);
     color: var(--ink-soft);
     font-size: 0.875rem;
     font-weight: 600;

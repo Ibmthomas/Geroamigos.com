@@ -23,6 +23,9 @@ src/
   config.ts            correo, menú, páginas publicadas y datos de la organización
   data/home.ts         textos de la portada (fuente única para HTML y Markdown)
   data/pages/*.md      Nosotros, Contacto y Privacidad (se publican en HTML y en index.md)
+  data/blog/*.md       artículos del blog: uno por archivo → /blog/<archivo>/
+  data/recursos.ts     guías y materiales de /recursos/ (hoy: vista previa de demostración)
+  data/eventos.ts      agenda de /eventos/ (solo eventos con fecha confirmada por el organizador)
   lib/agent-docs.ts    genera index.md, llms.txt, agents.md y sitemap.xml
   styles/global.css    tokens de marca (paleta, tipografías, botones)
   layouts/             Base (<head>, SEO, JSON-LD) y Page (páginas de texto)
@@ -35,6 +38,20 @@ public/
   trama.svg            patrón "Trama"
   og-image.jpg         imagen para compartir en redes
 ```
+
+## Accesibilidad: modo oscuro y texto grande
+
+La barra superior tiene un control `A` / `A+` / tema:
+
+- **Tema:** `data-theme="light|dark"` en `<html>`. Sin elección guardada sigue la preferencia del
+  sistema (`prefers-color-scheme`). Un script en `<head>` lo aplica antes de pintar (sin parpadeo).
+- **Texto grande:** `data-text="lg"` sube la fuente base a 118,75 %; como el sitio usa `rem`, escala
+  todo el contenido. El encabezado usa tamaños propios (`em` sobre 16 px) para que el menú no se desborde.
+- La elección se guarda en `localStorage` (`ga-theme`, `ga-text`).
+- Los componentes usan **tokens semánticos** (`--bg`, `--surface`, `--ink`, `--ink-soft`, `--line`,
+  `--block`, `--on-block`, `--link`, `--accent-text`), que `global.css` redefine en modo oscuro. La
+  paleta de marca (`--terracota`, `--papel`, …) no cambia: úsala solo para colores de marca fijos
+  (p. ej. texto Papel sobre un círculo Jade), no para fondo o texto de página.
 
 ## Marca
 

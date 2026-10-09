@@ -19,9 +19,21 @@
   --jade-suave: #c4dbd2;
   --maiz-suave: #f6dca4;
 
-  --ink: var(--cacao);
+  /* Tokens semánticos: los componentes usan estos (no la paleta) para fondo y texto,
+     así el modo oscuro solo los redefine. La paleta de arriba queda constante. */
+  --bg: var(--papel); /* fondo de página */
+  --surface: var(--algodon); /* tarjetas y secciones alternas */
+  --ink: var(--cacao); /* texto principal y bordes */
   --ink-soft: #6e5b4b;
   --line: #e3d6c2;
+  --block: var(--cacao); /* bloques oscuros: pie, ofertas, botón oscuro */
+  --on-block: var(--papel);
+  --accent-text: var(--fuego); /* etiquetas pequeñas en color (eyebrow) */
+  --link: var(--jade); /* enlaces y cargos */
+  --terracota-suave: #f4cdbf;
+  --map-land: #e3d6c2;
+  --shadow: rgba(42, 29, 20, 0.18);
+  color-scheme: light;
 
   --font-display: 'Bricolage Grotesque Variable', 'Arial Narrow', system-ui, sans-serif;
   --font-body: 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -31,6 +43,26 @@
   --wrap: 1180px;
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --section: clamp(4.5rem, 10vw, 8rem);
+}
+
+/* Modo oscuro: lo activa el selector del menú (data-theme en <html>, guardado en
+   localStorage). Sin elección guardada, sigue la preferencia del sistema. */
+:root[data-theme='dark'] {
+  --bg: #17110c;
+  --surface: #241a12;
+  --ink: #f3e8d6;
+  --ink-soft: #cdbca6;
+  --line: #3b2c21;
+  --block: #3a2a1e;
+  --on-block: var(--papel);
+  --accent-text: #f0855c;
+  --link: #5cc2b5;
+  --jade-suave: #1f3b37;
+  --maiz-suave: #4a3916;
+  --terracota-suave: #4b241a;
+  --map-land: #3b2c21;
+  --shadow: rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
 }
 
 *,
@@ -45,9 +77,14 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Texto grande (botón A+ del menú): todo el sitio usa rem, así que escala completo */
+:root[data-text='lg'] {
+  font-size: 118.75%;
+}
+
 body {
   margin: 0;
-  background: var(--papel);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
   font-size: 1.125rem;
@@ -88,7 +125,7 @@ p {
 }
 
 :focus-visible {
-  outline: 3px solid var(--jade);
+  outline: 3px solid var(--link);
   outline-offset: 3px;
   border-radius: 4px;
 }
@@ -108,7 +145,7 @@ p {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--fuego);
+  color: var(--accent-text);
   margin-bottom: 1rem;
 }
 
@@ -155,8 +192,8 @@ p {
 }
 
 .btn--dark {
-  background: var(--cacao);
-  color: var(--papel);
+  background: var(--block);
+  color: var(--on-block);
 }
 
 .btn--dark:hover {
@@ -164,14 +201,14 @@ p {
 }
 
 .btn--ghost {
-  border-color: var(--cacao);
-  color: var(--cacao);
+  border-color: var(--ink);
+  color: var(--ink);
   background: transparent;
 }
 
 .btn--ghost:hover {
-  background: var(--cacao);
-  color: var(--papel);
+  background: var(--ink);
+  color: var(--bg);
 }
 
 .btn--light {

@@ -1,0 +1,360 @@
+---
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/Icon.astro';
+import Isotipo from '../../components/Isotipo.astro';
+import { RECURSOS, RECURSOS_PAGE } from '../../data/recursos';
+import { SITE } from '../../config';
+
+const { title, eyebrow, description, lead, aviso, proximos } = RECURSOS_PAGE;
+---
+<Page title={title} eyebrow={eyebrow} description={description} lead={lead} ancho="wide">
+  <p class="demo-aviso" role="note">
+    <Icon name="candado" size={20} />
+    {aviso}
+  </p>
+
+  <ul class="recursos">
+    {RECURSOS.map((r) => (
+      <li class:list={['recurso', `recurso--${r.tono}`]} id={r.id}>
+        <div class="recurso__portada" aria-hidden="true">
+          <span class="portada__circulo"></span>
+          <span class="portada__cat">{r.categoria}</span>
+          <span class="portada__titulo">{r.titulo}</span>
+          <span class="portada__formatos">
+            {r.formatos.map((f) => <span>{f}</span>)}
+          </span>
+          <span class="portada__marca"><Isotipo size={34} /> GeroAmigos</span>
+        </div>
+
+        <div class="recurso__info">
+          <p class:list={['recurso__acceso', `recurso__acceso--${r.acceso}`]}>
+            {r.acceso === 'gratis' ? 'Gratis' : 'De pago'} · {r.formatos.join(' + ')}
+          </p>
+          <h2 class="recurso__titulo">{r.titulo}</h2>
+          <p class="recurso__sub">{r.subtitulo}</p>
+          <p class="recurso__desc">{r.descripcion}</p>
+          <p class="recurso__incluye-titulo">Incluye</p>
+          <ul class="recurso__incluye">
+            {r.incluye.map((item) => <li>{item}</li>)}
+          </ul>
+          <dl class="recurso__meta">
+            <div><dt>Formato</dt><dd>{r.extension}</dd></div>
+            <div><dt>Para</dt><dd>{r.publico}</dd></div>
+          </dl>
+          <div class="recurso__compra">
+            <p class="recurso__precio">
+              {r.acceso === 'pago' ? (
+                <>
+                  {r.precio}
+                  <small>Precio de ejemplo</small>
+                </>
+              ) : (
+                'Gratis'
+              )}
+            </p>
+            <button
+              class:list={['btn', r.acceso === 'pago' ? 'btn--primary' : 'btn--dark']}
+              type="button"
+              aria-describedby={`${r.id}-demo`}
+              data-demo={r.id}
+            >
+              <Icon name={r.acceso === 'pago' ? 'carrito' : 'documento'} size={20} />
+              {r.acceso === 'pago' ? 'Comprar' : 'Descargar PDF gratis'}
+            </button>
+          </div>
+          <p class="recurso__demo" id={`${r.id}-demo`} role="status" hidden data-demo-msg={r.id}>
+            Demostración: este recurso aún no está disponible. Si quieres que te avisemos cuando lo esté,
+            escríbenos a <a href={`mailto:${SITE.email}?subject=${encodeURIComponent(`Avísenme: ${r.titulo}`)}`}>{SITE.email}</a>.
+          </p>
+        </div>
+      </li>
+    ))}
+  </ul>
+
+  <section class="proximos" aria-labelledby="proximos-title">
+    <h2 id="proximos-title" class="proximos__title">{proximos.title}</h2>
+    <p class="proximos__lead">{proximos.lead}</p>
+    <ul class="proximos__lista">
+      {proximos.formatos.map((f) => (
+        <li>
+          <span class="proximos__formato">{f.formato}</span>
+          <span>{f.texto}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Page>
+
+<script>
+  // Botones de demostración: no descargan ni cobran; muestran un aviso.
+  document.querySelectorAll<HTMLButtonElement>('[data-demo]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const msg = document.querySelector<HTMLElement>(`[data-demo-msg="${btn.dataset.demo}"]`);
+      if (msg) msg.hidden = false;
+    });
+  });
+</script>
+
+<style>
+  .demo-aviso {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: var(--radius);
+    background: var(--maiz-suave);
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .demo-aviso :global(svg) {
+    flex: none;
+  }
+
+  .recursos {
+    display: grid;
+    gap: 1.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .recurso {
+    --tono: var(--terracota);
+    display: grid;
+    grid-template-columns: minmax(13rem, 17rem) 1fr;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: var(--radius);
+    background: var(--surface);
+    border-top: 6px solid var(--tono);
+  }
+  .recurso--maiz { --tono: var(--maiz); }
+  .recurso--jade { --tono: var(--jade); }
+
+  /* Portada simulada del documento */
+  .recurso__portada {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    aspect-ratio: 3 / 4;
+    padding: 1.4rem 1.3rem;
+    border-radius: 6px;
+    background: var(--tono);
+    color: var(--papel);
+    box-shadow: 0 14px 30px var(--shadow);
+  }
+  .recurso--maiz .recurso__portada {
+    color: var(--cacao);
+  }
+  .portada__circulo {
+    position: absolute;
+    width: 75%;
+    aspect-ratio: 1;
+    right: -28%;
+    bottom: -18%;
+    border-radius: 50%;
+    background: var(--cacao);
+    opacity: 0.22;
+  }
+  .portada__cat {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .portada__titulo {
+    position: relative;
+    margin-top: 0.8rem;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.5rem, 2.4vw, 1.9rem);
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .portada__formatos {
+    position: relative;
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 1rem;
+  }
+  .portada__formatos span {
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    border: 1.5px solid currentColor;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .portada__marca {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: auto;
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .recurso__acceso {
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .recurso__acceso--gratis {
+    background: var(--jade);
+    color: #fff;
+  }
+  .recurso__acceso--pago {
+    background: var(--maiz);
+    color: var(--cacao);
+  }
+  .recurso__titulo {
+    margin-top: 0.9rem;
+    font-size: clamp(1.8rem, 3.4vw, 2.5rem);
+  }
+  .recurso__sub {
+    margin-top: 0.4rem;
+    font-weight: 600;
+    color: var(--link);
+  }
+  .recurso__desc {
+    margin-top: 0.9rem;
+    color: var(--ink-soft);
+    max-width: 60ch;
+  }
+  .recurso__incluye-titulo {
+    margin-top: 1.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  .recurso__incluye {
+    display: grid;
+    gap: 0.4rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .recurso__incluye li {
+    position: relative;
+    padding-left: 1.3rem;
+  }
+  .recurso__incluye li::before {
+    content: '';
+    position: absolute;
+    left: 0.1rem;
+    top: 0.6em;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--tono);
+  }
+  .recurso__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2rem;
+    margin: 1.2rem 0 0;
+    font-size: 0.95rem;
+  }
+  .recurso__meta dt {
+    font-weight: 700;
+  }
+  .recurso__meta dd {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+  .recurso__compra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .recurso__precio {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .recurso__precio small {
+    display: block;
+    margin-top: 0.3rem;
+    font-family: var(--font-body);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--ink-soft);
+  }
+  .recurso__demo {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius);
+    background: var(--bg);
+    border-left: 4px solid var(--tono);
+    font-size: 0.95rem;
+  }
+  .recurso__demo a {
+    color: var(--link);
+    font-weight: 600;
+  }
+
+  .proximos {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+  }
+  .proximos__title {
+    font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+  }
+  .proximos__lead {
+    margin-top: 0.75rem;
+    color: var(--ink-soft);
+  }
+  .proximos__lista {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .proximos__lista li {
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.2rem;
+    border-radius: var(--radius);
+    border: 1.5px dashed var(--line);
+    color: var(--ink-soft);
+  }
+  .proximos__formato {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--ink);
+  }
+
+  @media (max-width: 760px) {
+    .recurso {
+      grid-template-columns: 1fr;
+    }
+    .recurso__portada {
+      width: min(100%, 15rem);
+    }
+    .proximos__lista {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,168 @@
+---
+import Page from '../../layouts/Page.astro';
+import Icon from '../../components/Icon.astro';
+import { BLOG_PAGE, fechaLarga, posts } from '../../lib/blog';
+
+const { title, eyebrow, description, lead, multimedia } = BLOG_PAGE;
+---
+<Page title={title} eyebrow={eyebrow} description={description} lead={lead} ancho="wide">
+  <section aria-labelledby="articulos-title">
+    <h2 id="articulos-title" class="blog__h2">Artículos</h2>
+    <ul class="posts">
+      {posts.map(({ slug, entry: { frontmatter: fm } }) => (
+        <li class="post-card">
+          <span class="post-card__deco" aria-hidden="true"></span>
+          <p class="post-card__tema">{fm.tema}</p>
+          <h3 class="post-card__title">
+            <a href={`/blog/${slug}/`}>{fm.title}</a>
+          </h3>
+          <p class="post-card__lead">{fm.lead}</p>
+          <p class="post-card__meta">
+            <time datetime={fm.date}>{fechaLarga(fm.date)}</time> · {fm.lectura} min de lectura
+          </p>
+          <span class="post-card__cta" aria-hidden="true">Leer artículo <Icon name="flecha" size={18} /></span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="multimedia" aria-labelledby="multimedia-title">
+    <div class="multimedia__head">
+      <h2 id="multimedia-title" class="blog__h2">{multimedia.title}</h2>
+      <span class="multimedia__badge">{multimedia.badge}</span>
+    </div>
+    <p class="multimedia__lead">{multimedia.lead}</p>
+    <ul class="multimedia__lista">
+      {multimedia.formatos.map((f) => (
+        <li><Icon name="play" size={26} /> {f}</li>
+      ))}
+    </ul>
+  </section>
+</Page>
+
+<style>
+  .blog__h2 {
+    font-size: clamp(1.8rem, 3.4vw, 2.4rem);
+  }
+  .posts {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: 1.25rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .post-card {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding: 1.6rem 1.6rem 1.4rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border-top: 6px solid var(--jade);
+    transition: transform 0.2s;
+  }
+  .post-card:hover {
+    transform: translateY(-3px);
+  }
+  .post-card__deco {
+    position: absolute;
+    width: 9rem;
+    aspect-ratio: 1;
+    right: -3rem;
+    top: -3rem;
+    border-radius: 50%;
+    background: var(--jade-suave);
+  }
+  .post-card__tema {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-text);
+  }
+  .post-card__title {
+    position: relative;
+    margin-top: 0.8rem;
+    font-size: clamp(1.5rem, 2.6vw, 1.9rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .post-card__title a {
+    text-decoration: none;
+  }
+  /* Toda la tarjeta es clicable a través del enlace del título */
+  .post-card__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .post-card__lead {
+    margin-top: 0.8rem;
+    color: var(--ink-soft);
+  }
+  .post-card__meta {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+  .post-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    font-weight: 700;
+    color: var(--link);
+  }
+
+  .multimedia {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+  }
+  .multimedia__head {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+  .multimedia__badge {
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    background: var(--maiz);
+    color: var(--cacao);
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .multimedia__lead {
+    margin-top: 0.75rem;
+    color: var(--ink-soft);
+  }
+  .multimedia__lista {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .multimedia__lista li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.2rem;
+    border-radius: var(--radius);
+    border: 1.5px dashed var(--line);
+    font-weight: 700;
+    color: var(--ink-soft);
+  }
+  @media (max-width: 760px) {
+    .multimedia__lista {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

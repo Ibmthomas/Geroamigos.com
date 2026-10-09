@@ -11,8 +11,10 @@ interface Props {
   description: string;
   eyebrow: string;
   lead: string;
+  /** 'prose': columna de lectura (por defecto) · 'wide': tarjetas y listados a todo el ancho */
+  ancho?: 'prose' | 'wide';
 }
-const { title, description, eyebrow, lead } = Astro.props;
+const { title, description, eyebrow, lead, ancho = 'prose' } = Astro.props;
 ---
 <Base title={`${title} · ${SITE.name}`} description={description}>
   <Header />
@@ -27,7 +29,7 @@ const { title, description, eyebrow, lead } = Astro.props;
     </section>
     <Trama height="clamp(28px, 3.5vw, 44px)" />
     <section class="section page-body">
-      <div class="wrap prose">
+      <div class:list={['wrap', { prose: ancho === 'prose' }]}>
         <slot />
       </div>
     </section>
@@ -92,10 +94,13 @@ const { title, description, eyebrow, lead } = Astro.props;
   }
   .prose :global(li) {
     position: relative;
-    padding-left: 1.6rem;
     margin-top: 0.6rem;
   }
-  .prose :global(li)::before {
+  /* Viñetas de color solo en listas sin orden; las numeradas conservan su número */
+  .prose :global(ul > li) {
+    padding-left: 1.6rem;
+  }
+  .prose :global(ul > li)::before {
     content: '';
     position: absolute;
     left: 0.15rem;
@@ -105,14 +110,22 @@ const { title, description, eyebrow, lead } = Astro.props;
     border-radius: 50%;
     background: var(--terracota);
   }
-  .prose :global(li:nth-child(3n + 2))::before {
+  .prose :global(ul > li:nth-child(3n + 2))::before {
     background: var(--maiz);
   }
-  .prose :global(li:nth-child(3n))::before {
+  .prose :global(ul > li:nth-child(3n))::before {
     background: var(--jade);
   }
+  .prose :global(ol) {
+    padding-left: 1.6rem;
+  }
+  .prose :global(ol > li)::marker {
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
   .prose :global(a) {
-    color: var(--jade);
+    color: var(--link);
     font-weight: 600;
     text-underline-offset: 4px;
   }

@@ -1,0 +1,75 @@
+---
+import type { MarkdownInstance } from 'astro';
+import Page from '../../../layouts/Page.astro';
+import Icon from '../../../components/Icon.astro';
+import { fechaLarga, postPaths, type PostFrontmatter } from '../../../lib/blog';
+
+export const getStaticPaths = postPaths;
+
+interface Props {
+  entry: MarkdownInstance<PostFrontmatter>;
+}
+const { entry } = Astro.props;
+const { Content, frontmatter: fm } = entry;
+---
+<Page title={fm.title} eyebrow={fm.eyebrow} description={fm.description} lead={fm.lead}>
+  <div class="post-meta">
+    <span><Icon name="calendario" size={18} /> <time datetime={fm.date}>{fechaLarga(fm.date)}</time></span>
+    <span><Icon name="reloj" size={18} /> {fm.lectura} min de lectura</span>
+    <span>{fm.autor}</span>
+  </div>
+  <article class="post">
+    <Content />
+  </article>
+  <div class="post-volver"><a href="/blog/"><Icon name="flecha" size={18} class="post-volver__icon" /> Volver al blog</a></div>
+</Page>
+
+<style>
+  .post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 2.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+  }
+  .post-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  /* Cifras destacadas y citas dentro del artículo */
+  .post :global(blockquote) {
+    margin: 1.75rem 0 0;
+    padding: 1.1rem 1.4rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border-left: 5px solid var(--terracota);
+    font-size: 1.15rem;
+    color: var(--ink);
+  }
+  .post :global(blockquote p) {
+    margin: 0;
+    color: var(--ink);
+  }
+  .post :global(h2#fuentes ~ ol),
+  .post :global(h2#fuentes ~ ul) {
+    font-size: 0.95rem;
+  }
+  .post-volver {
+    margin-top: 3rem;
+  }
+  .post-volver a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--link);
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .post-volver :global(.post-volver__icon) {
+    transform: rotate(180deg);
+  }
+</style>
