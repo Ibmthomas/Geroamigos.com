@@ -101,6 +101,38 @@ export const PAISES: Pais[] = [
           { tipo: 'correo', url: 'mailto:silversociety2025@gmail.com', label: 'silversociety2025@gmail.com' },
         ],
       },
+      {
+        id: 'anna-karen-gonzalez',
+        nombre: 'Anna Karen González Franco',
+        ciudad: 'Veracruz',
+        rol: 'Licenciada en Gerontología · CEO y Fundadora de GerontoCare',
+        experiencia: [
+          'Licenciada en Gerontología, especialista en Cuidados Paliativos y máster en Administración y Gestión de Recursos Gerontológicos.',
+          'Desde 2015 es CEO y fundadora de GerontoCare, un modelo pionero de coliving donde la vejez se habita con dignidad, autonomía y derechos, y el entorno residencial protege siempre la autonomía de las personas.',
+          'Seleccionada por ONU Mujeres por su compromiso con la profesionalización de los cuidados. Acompaña, empodera y visibiliza a las vejeces con enfoque de género y derechos humanos: «cuidar no es un acto de caridad, sino una ciencia profesional».',
+        ],
+        oferta: {
+          titulo: 'Servicios de GerontoCare',
+          tipo: 'servicios',
+          items: [
+            { titulo: 'GerontoCare CoLiving', detalle: 'Estancias de día, temporales y 24 horas' },
+            { titulo: 'Modelos de cuidados', detalle: 'Asesoría para crearlos' },
+            { titulo: 'Consultoría en servicios', detalle: 'Para personas mayores y sus familias' },
+            { titulo: 'Valoración gerontológica integral', detalle: 'Diagnóstico multidimensional y plan personalizado' },
+            { titulo: 'Capacitaciones y cursos', detalle: 'Pláticas comunitarias sobre vejez' },
+          ],
+        },
+        redes: [
+          { tipo: 'web', url: 'https://www.gerontocare.mx', label: 'gerontocare.mx' },
+          { tipo: 'instagram', url: 'https://www.instagram.com/annakarengerontologa/', label: '@annakarengerontologa' },
+          { tipo: 'instagram', url: 'https://www.instagram.com/gerontocarecoliving/', label: '@gerontocarecoliving' },
+          {
+            tipo: 'correo',
+            url: 'mailto:gerontologa.annakaren@gerontocare.mx',
+            label: 'gerontologa.annakaren@gerontocare.mx',
+          },
+        ],
+      },
     ],
   },
   {

@@ -230,10 +230,11 @@ describe('portada: mapa y recorrido por la red', () => {
     assert.match(costaRica, /Pronto presentaremos a los amigos de Costa Rica/);
   });
 
-  test('México presenta a Lilian y Daisy, Colombia a Catalina y Natalia y Perú a Rosaestela, con foto, ciudad y oferta', () => {
+  test('México presenta a Lilian, Daisy y Anna Karen, Colombia a Catalina y Natalia y Perú a Rosaestela, con foto, ciudad y oferta', () => {
     const casos = [
       ['mexico', 'Lilian Pedroza Espinosa de los Monteros', 'Estado de México', 'Servicios en Altern Gerontológica', '@altern_gerontologica'],
       ['mexico', 'Daisy Karina Martínez Burgos', 'Culiacán, Sinaloa', 'Servicios de Silver Society', '@silversocietymx'],
+      ['mexico', 'Anna Karen González Franco', 'Veracruz', 'Servicios de GerontoCare', '@gerontocarecoliving'],
       ['peru', 'Rosaestela Gómez Holguín', 'Lima', 'Asesorías y programas', '@nietositinerantes'],
       ['colombia', 'Laura Catalina Restrepo Barrientos', 'Bello, Antioquia', 'Servicios de Geronto Senior', 'gerontosenior2025@gmail.com'],
       ['colombia', 'Natalia Hurtado Alzate', 'Medellín', 'Charlas, talleres y acompañamientos', '@gerontologianathural'],
@@ -257,16 +258,18 @@ describe('portada: mapa y recorrido por la red', () => {
     assert.match(lilian, /<span class="oferta"/);
     assert.match(mexico, /href="mailto:silversociety2025@gmail\.com\?subject=Estimulaci%C3%B3n%20cognitiva%20%C2%B7%20v%C3%ADa%20GeroAmigos"/);
     assert.match(seccion('peru'), /href="mailto:rosaegomezholguin@gmail\.com\?subject=/);
+    assert.match(mexico, /href="mailto:gerontologa\.annakaren@gerontocare\.mx\?subject=GerontoCare%20CoLiving%20%C2%B7%20v%C3%ADa%20GeroAmigos"/);
+    assert.match(mexico, /href="https:\/\/www\.gerontocare\.mx"/);
   });
 
-  test('en "Los amigos" están los 6 amigos sin fotos (no se repiten) y sin invitación a sumarse', () => {
+  test('en "Los amigos" están los 7 amigos sin fotos (no se repiten) y sin invitación a sumarse', () => {
     const amigos = html.slice(html.indexOf('id="amigos"'), html.indexOf('id="contacto"'));
-    assert.equal(amigos.match(/class="amigo amigo--[a-z]+ amigo--sin-foto"/g).length, 6);
+    assert.equal(amigos.match(/class="amigo amigo--[a-z]+ amigo--sin-foto"/g).length, 7);
     assert.ok(!/<img/.test(amigos), 'sin fotos');
     assert.ok(!/class="amigo__iniciales"/.test(amigos), 'sin iniciales');
     assert.ok(!/Tu lugar en la red|Quiero sumarme/.test(amigos), 'sin invitación');
     // Cada foto aparece una sola vez en la página: en la sección de su país
-    for (const nombre of ['Lilian Pedroza Espinosa de los Monteros', 'Daisy Karina Martínez Burgos', 'Laura Catalina Restrepo Barrientos', 'Natalia Hurtado Alzate', 'Rosaestela Gómez Holguín', 'Thomas Contreras Gavilán']) {
+    for (const nombre of ['Lilian Pedroza Espinosa de los Monteros', 'Daisy Karina Martínez Burgos', 'Anna Karen González Franco', 'Laura Catalina Restrepo Barrientos', 'Natalia Hurtado Alzate', 'Rosaestela Gómez Holguín', 'Thomas Contreras Gavilán']) {
       assert.equal(html.split(`alt="Retrato de ${nombre}"`).length - 1, 1, nombre);
     }
   });
